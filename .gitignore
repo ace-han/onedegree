@@ -5,8 +5,10 @@
 /static
 /media
 /database.sqlite
+/db.sqlite3
 /.project
 /.pydevproject
 /tmp
 /.settings
 /manage*dev.py
+/onedegree/static/bower_components/*
