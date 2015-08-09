@@ -1,0 +1,24 @@
+{
+  "name": "onedegree",
+  "private": true,
+  "version": "1.0.0",
+  "authors": [
+    "Ace Han <ace.jl.han@gmail.com>"
+  ],
+  "moduleType": [
+    "amd"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ng-admin": "eb30bc1cf0",
+    "select2": "~3.4.5",
+    "angular-ui-select": "~0.12.1",
+    "ng-file-upload": "5.2.0"
+  }
+}

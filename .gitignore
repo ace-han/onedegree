@@ -1,0 +1,12 @@
+*.pyc
+*.bak
+/logs/*.log
+/manage.dev.py
+/static
+/media
+/database.sqlite
+/.project
+/.pydevproject
+/tmp
+/.settings
+/manage*dev.py
