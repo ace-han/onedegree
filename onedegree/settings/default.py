@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
     'pytz',
     'rest_framework',
+    'taggit',
     
     'onedegree',
     'tag',
@@ -100,6 +101,14 @@ WSGI_APPLICATION = 'onedegree.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
+# monkey patch for pymysql as db level
+
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass 
+
 
 DATABASES = {
     'default': {
@@ -298,7 +307,7 @@ SOCIAL_AUTH_URL_NAMESPACE = 'social'
 # JWT config
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny', # for the time being only
     ), 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
