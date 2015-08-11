@@ -42,14 +42,14 @@ python manage[.dev].py migrate [app_name] [version #]
 
 
 * *MySql-wise fresh initial setup* (run below by `root` in mysql console)
-CREATE DATABASE `quanquan` CHARACTER SET utf8 COLLATE utf8_general_ci;
-GRANT ALL ON `quanquan`.* TO `quanquan`@`%` IDENTIFIED BY 'quanquan';
+CREATE DATABASE `onedegree` CHARACTER SET utf8 COLLATE utf8_general_ci;
+GRANT ALL ON `onedegree`.* TO `onedegree`@`%` IDENTIFIED BY 'onedegree';
 FLUSH PRIVILEGES;
 
-REVOKE ALL ON `quanquan`.* FROM quanquan@localhost;
+REVOKE ALL ON `onedegree`.* FROM onedegree@localhost;
 FLUSH PRIVILEGES;
-drop user quanquan@localhost;
-drop database registration;
+drop user onedegree@localhost;
+drop database onedegree;
 
 INSERT INTO mysql.time_zone (Use_leap_seconds) VALUES ('N');
 SET @time_zone_id= LAST_INSERT_ID();

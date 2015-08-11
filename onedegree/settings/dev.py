@@ -4,6 +4,23 @@ from onedegree.settings.default import *
 DEBUG = True
 TEMPLATE_DEBUG = False
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'onedegree',                      # Or path to database file if using sqlite3.
+        'USER': 'onedegree',                      # Not used with sqlite3.
+        'PASSWORD': 'onedegree',                  # Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3306',
+        'OPTIONS': {
+            # options could be found http://mysql-python.sourceforge.net/MySQLdb.html
+            # pre db setup scripts, plz see to freq_scripts.txt 
+            'init_command': "SET storage_engine=INNODB, time_zone='%s'" % TIME_ZONE,
+            'charset': 'utf8',
+        }
+    }
+}
+
 #'''
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
