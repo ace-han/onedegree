@@ -22,6 +22,15 @@ class TreeTag(MPTTModel, TagBase):
         if not is_ascii(tag):
             # it's very rare invocation
             from unihandecode import Unihandecoder
-            d = Unihandecoder(lang='zh') # I decide to use zh only first
+            # I decide to use zh only first
+            # it seems zh could also do ja
+            # s = '明天明天的风吹明日は明日の風が吹く'
+            # zh_d = Unihandecoder(lang='zh')
+            # zh_d.decode(s)
+            # 'Ming Tian Ming Tian De Feng Chui Ming Ri haMing Ri noFeng gaChui ku'
+            # ja_d = Unihandecoder(lang='ja')
+            # ja_d.decode(s)
+            # 'Mei Tenmei Ten Teki Sui Ashita ha Ashita no Kaze ga Fuku'
+            d = Unihandecoder(lang='zh') 
             tag = d.decode( tag )
         return super(TreeTag, self).slugify(tag, i) 
