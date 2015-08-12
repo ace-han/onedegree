@@ -3,9 +3,9 @@ define([
 ]
 ,function () {
     'use strict';
-    return tagEntityInit;
+    return treeTagEntityInit;
     
-    function tagEntityInit(nga, entityMap){
+    function treeTagEntityInit(nga, entityMap){
     	// nga is NgAdminConfigurationProvider
     	if(! ('tag' in entityMap) ){
     		throw 'No tag defined in entityMap';

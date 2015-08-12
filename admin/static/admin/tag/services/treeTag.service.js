@@ -6,15 +6,15 @@ define([
 function (angular, module, namespace) {
     'use strict';
 
-    var name = namespace + '.tagTreeService';
+    var name = namespace + '.treeTagService';
 
-    module.factory(name, tagTreeService);
+    module.factory(name, treeTagService);
 
-    tagTreeService.$inject = ['$http', '$q', '$window', '$timeout' ];
+    treeTagService.$inject = ['$http', '$q', '$window', '$timeout' ];
 
-    return tagTreeService;
+    return treeTagService;
 
-    function tagTreeService($http, $q, $window, $timeout){
+    function treeTagService($http, $q, $window, $timeout){
         var _cache;
 
         var service = {

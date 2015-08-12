@@ -53,7 +53,7 @@ require.config({
 		, 'requirejs-text': "requirejs-text/text"
 		, 'ui-select': 'angular-ui-select/dist/select'
 	
-    	, admin: '../admin'	//inside the admin/app.js will do relative path dependencies
+    	, 'admin': '../admin'	//since baseUrl is bower_component. Inside the admin/app.js will do relative path dependencies
     	//, xxx: 'xxx'
     },
     shim: {

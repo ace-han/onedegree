@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'taggit',
     
     'onedegree',
+    'admin',
     'tag',
     
 )

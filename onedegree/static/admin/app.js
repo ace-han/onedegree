@@ -10,7 +10,7 @@ define([
 //    , './common/namespace'
 //    , './quanquan/namespace'
     // would be entity for diff app entity c-tor
-    , './tag/entity'
+    , './tag/entities/treeTagEntity'
     // for the convenience of invocation
     , 'ng-admin'
     , './tag/module.require'
@@ -23,7 +23,7 @@ define([
 ],
 function (angular, namespace
     , tagNamespace
-    , tagEntityInit) {
+    , treeTagEntityInit) {
     
     /* 
         Admin official entry point
@@ -44,12 +44,11 @@ function (angular, namespace
 //        , quanquanNamespace
         ])
         .config(['NgAdminConfigurationProvider', 
-                 function(NgAdminConfigurationProvider,
-                		 tagEntity) {
+                 function(NgAdminConfigurationProvider) {
         	var key;
         	var nga = NgAdminConfigurationProvider;
             var admin = nga.application('ng-admin backend demo', false) // application main title and debug disabled
-                .baseApiUrl('http://localhost:8090/'); // main API endpoint
+                .baseApiUrl('http://localhost:8090/	'); // main API endpoint
             
             var entityNames = ['tag'], 
             	entityMap = {};
@@ -58,7 +57,7 @@ function (angular, namespace
             }
 
             
-            tagEntityInit(nga, entityMap);
+            treeTagEntityInit(nga, entityMap);
             // rest entities init stuff
             
             for( key in entityMap){

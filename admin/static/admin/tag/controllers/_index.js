@@ -1,5 +1,5 @@
 define([
-    './tagTree.controller'
+    './treeTag.controller'
 //    , './topic.service'
 ], function () {
     'use strict';
