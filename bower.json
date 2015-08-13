@@ -19,6 +19,7 @@
     "ng-admin": "eb30bc1cf0",
     "select2": "~3.4.5",
     "angular-ui-select": "~0.12.1",
-    "ng-file-upload": "5.2.0"
+    "ng-file-upload": "5.2.0",
+    "font-awesome": "4.4.0"
   }
 }
