@@ -47,8 +47,9 @@ function (angular, namespace
                  function(NgAdminConfigurationProvider) {
         	var key;
         	var nga = NgAdminConfigurationProvider;
+        	var baseApiUrl = 'http://localhost:8090/api/v1/admin';
             var admin = nga.application('ng-admin backend demo', false) // application main title and debug disabled
-                .baseApiUrl('http://localhost:8090/	'); // main API endpoint
+                .baseApiUrl(baseApiUrl); // main API endpoint
             
             var entityNames = ['tag'], 
             	entityMap = {};
@@ -60,10 +61,45 @@ function (angular, namespace
             treeTagEntityInit(nga, entityMap);
             // rest entities init stuff
             
-            for( key in entityMap){
-            	admin.addEntity( entityMap[key] );
-            }
+//            for( key in entityMap){
+//            	admin.addEntity( entityMap[key] );
+//            }
             
+            
+            var tagModuleMenu = nga.menu()
+								  .title('Tag')
+								  .link('/tag')
+								  .icon('<span class="fa fa-tags"></span>');
+            
+            var treeTag = nga.entity('tree-tags')
+					            .baseApiUrl(baseApiUrl + '/tag/')
+            					.label('Tree Tags')
+//            					.url(function(entityName, viewType, identifierValue, identifierName) {
+//            						return '/tag/tree-tags/' + entityName + '_' + viewType + '?' + identifierName + '=' + identifierValue; // Can be absolute or relative
+//            					});
+            
+            treeTag.listView()
+	            .title('All tree tags') // default title is "[Entity_name] list"
+	            .description('List of tree tags with infinite pagination') // description appears under the title
+	            .infinitePagination(true) // load pages as the user scrolls
+	            .fields([
+	                nga.field('id').label('ID'), // The default displayed name is the camelCase field name. label() overrides id
+	                nga.field('name'), // the default list field type is "string", and displays as a string
+	                nga.field('slug')
+	            ])
+	            .listActions(['show', 'edit', 'delete']);
+            admin.addEntity( treeTag )
+            admin.menu(nga.menu()
+            		 		.addChild(
+            		 				tagModuleMenu
+            		 					.addChild(nga.menu(treeTag)
+            		 							// entity's default route defined in ng-admin already
+            		 							// if we do need this route url setting, might as well define another set routing provider
+            		 							//.link('/tag/tree-tags')
+            		 							.icon('<span class="fa fa-tree"></span>'))
+            				 )
+            		
+            		);
             nga.configure(admin);
         }])
         .run(function () {
