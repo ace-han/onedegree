@@ -10,7 +10,7 @@ define([
 //    , './common/namespace'
 //    , './quanquan/namespace'
     // would be entity for diff app entity c-tor
-    , './tag/entities/treeTagEntity'
+    //, './tag/entity' // migrate to constant, a constant is an IIFE complex object with method init
     // for the convenience of invocation
     , 'ng-admin'
     , './tag/module.require'
@@ -23,7 +23,7 @@ define([
 ],
 function (angular, namespace
     , tagNamespace
-    , treeTagEntityInit) {
+    ) {
     
     /* 
         Admin official entry point
@@ -35,71 +35,40 @@ function (angular, namespace
         ['ng-admin'
         //, 'ct.ui.router.extras.future', 'ct.ui.router.extras.statevis' // this two should be manually added
         //, 'angularMoment'
-
-        
         // below enable those namespace to be injected
         , tagNamespace
 //        , contactNamespace, searchNamespace
 //        , groupNamespace, commonNamespace
 //        , quanquanNamespace
         ])
-        .config(['NgAdminConfigurationProvider', 
-                 function(NgAdminConfigurationProvider) {
-        	var key;
+        .config(['NgAdminConfigurationProvider' 
+                 , 'tag.entities'
+                 , function(NgAdminConfigurationProvider
+                		 , tagModuleEntities) {
         	var nga = NgAdminConfigurationProvider;
         	var baseApiUrl = 'http://localhost:8090/api/v1/admin';
-            var admin = nga.application('ng-admin backend demo', false) // application main title and debug disabled
+            var admin = nga.application('One Degree Admin Site', true) // application main title and debug disabled
                 .baseApiUrl(baseApiUrl); // main API endpoint
             
-            var entityNames = ['tag'], 
-            	entityMap = {};
-            for(key in entityNames){
-            	entityMap[ entityNames[key] ] = nga.entity( entityNames[key] );
-            }
 
+            // this form is commonjs pattern 
+            // and commonjs is not designated to cater web browser
+//            var tag = require('tag');
             
-            treeTagEntityInit(nga, entityMap);
-            // rest entities init stuff
+            // then I need to resolve menu item modulization...
+            // in a simple way, entityMap sounds fine
+            // each module's init method defines its menu(with nested menu items defined)
+            // and entity definitions within
+            // the cross-module entity dependency order might as well be 
+            // maintained by the developer for the sake of simplicity 
+            var rootMenuItem = nga.menu(), 
+            	entityMap = {};
             
-//            for( key in entityMap){
-//            	admin.addEntity( entityMap[key] );
-//            }
+            // init methods have no return value, only edit the content of below references
+            tagModuleEntities.init(nga, admin, rootMenuItem, baseApiUrl, entityMap);
             
             
-            var tagModuleMenu = nga.menu()
-								  .title('Tag')
-								  .link('/tag')
-								  .icon('<span class="fa fa-tags"></span>');
-            
-            var treeTag = nga.entity('tree-tags')
-					            .baseApiUrl(baseApiUrl + '/tag/')
-            					.label('Tree Tags')
-//            					.url(function(entityName, viewType, identifierValue, identifierName) {
-//            						return '/tag/tree-tags/' + entityName + '_' + viewType + '?' + identifierName + '=' + identifierValue; // Can be absolute or relative
-//            					});
-            
-            treeTag.listView()
-	            .title('All tree tags') // default title is "[Entity_name] list"
-	            .description('List of tree tags with infinite pagination') // description appears under the title
-	            .infinitePagination(true) // load pages as the user scrolls
-	            .fields([
-	                nga.field('id').label('ID'), // The default displayed name is the camelCase field name. label() overrides id
-	                nga.field('name'), // the default list field type is "string", and displays as a string
-	                nga.field('slug')
-	            ])
-	            .listActions(['show', 'edit', 'delete']);
-            admin.addEntity( treeTag )
-            admin.menu(nga.menu()
-            		 		.addChild(
-            		 				tagModuleMenu
-            		 					.addChild(nga.menu(treeTag)
-            		 							// entity's default route defined in ng-admin already
-            		 							// if we do need this route url setting, might as well define another set routing provider
-            		 							//.link('/tag/tree-tags')
-            		 							.icon('<span class="fa fa-tree"></span>'))
-            				 )
-            		
-            		);
+            admin.menu(rootMenuItem);
             nga.configure(admin);
         }])
         .run(function () {
