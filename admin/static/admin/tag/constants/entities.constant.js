@@ -12,12 +12,17 @@ function (module, namespace
 
     // via literal objects IIFE(Immediately Invoked Function Expression)
     // refer to http://michalostruszka.pl/blog/2012/12/23/angular-better-constant-values/ 
-    var constant = (function(){
-    	var moduleEntities = {
+//    var constant = (function(){
+//    	var moduleEntities = {
+//    		init: init
+//    	};
+//    	return moduleEntities;
+//    })();
+    // since we've already in a function that could take many definitions
+    // no need to do IIFE
+    var constant = {
     		init: init
-    	};
-    	return moduleEntities;
-    })();
+    }
     module.constant(name, constant);
     
     return constant;
