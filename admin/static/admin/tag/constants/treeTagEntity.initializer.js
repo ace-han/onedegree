@@ -23,9 +23,48 @@ define([
 	        .fields([
 	            nga.field('id').label('ID'), // The default displayed name is the camelCase field name. label() overrides id
 	            nga.field('name'), // the default list field type is "string", and displays as a string
-	            nga.field('slug')
+	            nga.field('slug'),
+	            nga.field('parent_id', 'reference')
+	            	.label('Parent')
+	            	.targetEntity(treeTag)
+	            	.targetField(nga.field('name')),
+	            nga.field('tree_id'),
+	            nga.field('level')
 	        ])
-	        .listActions(['show', 'edit', 'delete']);
+	        .filters([
+                nga.field('q', 'template')
+                    .label('')
+                    .pinned(true)
+                    .template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'),
+                nga.field('tree_id')
+                    .label('Tree ID')
+                    .attributes({'placeholder': 'Filter by tree id'}),
+                nga.field('parent_id', 'reference')
+                    .label('Parent')
+                    .targetEntity(treeTag)
+                    .targetField(nga.field('name'))
+                    .remoteComplete(true, { refreshDelay: 300 })
+                    .attributes({'placeholder': 'Filter by parent name'}),
+            ])
+	        .listActions(['edit', 'delete']);
+    	
+    	treeTag.creationView()
+	        .fields([
+	            nga.field('id').label('ID'), // The default displayed name is the camelCase field name. label() overrides id
+	            nga.field('name'), // the default list field type is "string", and displays as a string
+	            nga.field('slug'),
+	            nga.field('parent_id', 'reference')
+	            	.label('Parent')
+	            	.targetEntity(treeTag)
+	            	.targetField(nga.field('name'))
+	            	.validation({ required: true })
+	            	.remoteComplete(true, { refreshDelay: 0 }),
+	            nga.field('tree_id'),
+	            nga.field('level')
+	        ]);
+    	
+    	treeTag.editionView()
+        	.fields(treeTag.creationView().fields())
     	
     	moduleMenu
 			.addChild(nga.menu(treeTag)
