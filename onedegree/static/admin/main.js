@@ -29,7 +29,7 @@ require.config({
 		, 'inflection': "inflection/inflection.min"
 		, 'lodash': "lodash/dist/lodash"
 		, 'ng-file-upload': "ng-file-upload/ng-file-upload-all"
-		, 'ngInflection': "ngInflection/ngInflection"
+		, 'ngInflection': "ngInflection/dist/ngInflection"
 		, 'nprogress': "nprogress/nprogress"
 		, 'restangular': "restangular/dist/restangular"
 		, 'textAngular': "textAngular/dist/textAngular.min"
@@ -73,7 +73,7 @@ require.config({
     	, 'lodash': {exports: 'lodash'}
     	, 'requirejs-text': {exports: 'requirejs-text'}
     	, 'papaparse': {exports: 'papaparse'}
-
+    	, 'inflection': {exports: 'inflection'}
     	, 'angular-bootstrap': { deps: ['angular']}
     	, 'angular-resource': { deps: ['angular']}
     	, 'angular-sanitize': { deps: ['angular']}

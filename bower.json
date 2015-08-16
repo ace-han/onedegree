@@ -20,6 +20,8 @@
     "select2": "~3.4.5",
     "angular-ui-select": "~0.12.1",
     "ng-file-upload": "5.2.0",
-    "font-awesome": "4.4.0"
+    "font-awesome": "4.4.0",
+    "ng-js-tree": "~0.0.6",
+    "ngInflection": "~1.1.10"
   }
 }
