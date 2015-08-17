@@ -53,6 +53,8 @@ require.config({
 		, 'requirejs-text': "requirejs-text/text"
 		, 'ui-select': 'angular-ui-select/dist/select'
 	
+		, 'jstree': 'jstree/dist/jstree'
+		, 'ng-js-tree': 'ng-js-tree/dist/ngJsTree'
     	, 'admin': '../admin'	//since baseUrl is bower_component. Inside the admin/app.js will do relative path dependencies
     	//, xxx: 'xxx'
     },
@@ -74,6 +76,7 @@ require.config({
     	, 'requirejs-text': {exports: 'requirejs-text'}
     	, 'papaparse': {exports: 'papaparse'}
     	, 'inflection': {exports: 'inflection'}
+    	, 'jstree': {exports: 'jstree'}
     	, 'angular-bootstrap': { deps: ['angular']}
     	, 'angular-resource': { deps: ['angular']}
     	, 'angular-sanitize': { deps: ['angular']}
@@ -85,33 +88,35 @@ require.config({
     	, 'nprogress': { deps: ['angular']}
     	, 'restangular': { deps: ['angular', 'lodash']}
     	, 'textAngular': { deps: ['angular']}
-    	, 'ui-select': { deps : ['angular']}
+    	, 'ui-select': { deps: ['angular']}
+    	, 'ng-js-tree': {deps: ['jquery', 'angular', 'jstree']}
 
     	// in this case just need to define(['ng-admin'], function(){}); will get all dependencies loaded
     	, 'ng-admin': { deps: [
-    						'jquery', 
-    						'angular', 
-    						'angular-bootstrap', 
-    						'angular-cookies', 
-    						'angular-numeraljs', 
-    						'angular-resource', 
-    						'angular-sanitize', 
-    						'angular-ui-codemirror', 
-    						'angular-ui-router', 
-    						'bootstrap', 
-    						'bootstrap-sass-official', // should be already duplicated
-    						'es5-shim', 
-    						'humane', 
-    						'json3', 
-    						'jsonlint', 
-    						'ng-file-upload', 
-    						'ngInflection', 
-    						'nprogress', 
-    						'requirejs-text', 
-    						'restangular', 
-    						'textAngular', 
-    						'papaparse',
-    						'ui-select'
+						'jquery', 
+						, 'angular'
+						, 'angular-bootstrap'
+						, 'angular-cookies'
+						, 'angular-numeraljs'
+						, 'angular-resource'
+						, 'angular-sanitize'
+						, 'angular-ui-codemirror'
+						, 'angular-ui-router'
+						, 'bootstrap'
+						, 'bootstrap-sass-official', // should be already duplicate
+						, 'es5-shim'
+						, 'humane'
+						, 'json3'
+						, 'jsonlint'
+						, 'ng-file-upload'
+						, 'ngInflection'
+						, 'nprogress'
+						, 'requirejs-text'
+						, 'restangular'
+						, 'textAngular'
+						, 'papaparse'
+						, 'ui-select'
+    					, 'ng-js-tree'
     				] }
     }
 });

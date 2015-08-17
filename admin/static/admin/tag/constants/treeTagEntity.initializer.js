@@ -15,7 +15,8 @@ define([
     	var entityName = 'tree-tags'
     	var treeTag = nga.entity(entityName)
 				        .baseApiUrl(moduleBaseApiUrl)
-						.label('Tree Tags');
+						.label('Tree Tags (Tabular View)');
+    	
     	treeTag.listView()
 	        .title('All tree tags') // default title is "[Entity_name] list"
 	        .description('List of tree tags with infinite pagination') // description appears under the title
@@ -66,12 +67,19 @@ define([
     	treeTag.editionView()
         	.fields(treeTag.creationView().fields())
     	
+    	
     	moduleMenu
+    		.addChild(nga.menu()
+    				.title('Tree Tags (Tree View)')
+    				.icon('<span class="fa fa-tree"></span>')
+    				.link('/tree-tags/tree'))
 			.addChild(nga.menu(treeTag)
 					// entity's default route defined in ng-admin already
 					// if we do need this route url setting, might as well define another set routing provider
 					//.link('/tag/tree-tags')
-					.icon('<span class="fa fa-tree"></span>'));
+					.icon('<span class="fa fa-th-list"></span>'));
+		
+    	
     	admin.addEntity( treeTag );
     	
     	entityMap[ entityName ] = treeTag;
