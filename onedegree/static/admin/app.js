@@ -42,8 +42,10 @@ function (angular, namespace
 //        , quanquanNamespace
         ])
         .config(['NgAdminConfigurationProvider' 
+                 , 'RestangularProvider'
                  , 'tag.entities'
                  , function(NgAdminConfigurationProvider
+                		 , RestangularProvider
                 		 , tagModuleEntities) {
         	var nga = NgAdminConfigurationProvider;
         	var baseApiUrl = 'http://localhost:8090/api/v1/admin';
@@ -70,6 +72,45 @@ function (angular, namespace
             
             admin.menu(rootMenuItem);
             nga.configure(admin);
+            
+            RestangularProvider.addFullRequestInterceptor(function(element, operation, what, url, headers, params, httpConfig) {
+                if (operation == 'getList') {
+                	// filtering settings
+                    if (params._filters) {
+                        for (var filter in params._filters) {                        	
+                            params[filter] = params._filters[filter];
+                            if (filter == 'q'){
+                            	params[filter] = '@' + params[filter];	// fulltext search MySql supported only
+                            }
+                        }
+                        delete params._filters;
+                    }
+                    
+                    // pagination settings
+                    params.page = params._page;
+                    params.page_size = params._perPage;
+                    delete params._page;
+                    delete params._perPage;
+                    
+                    //ordering/sort settings
+                    params.ordering = params._sortField || 'id';
+                	if (params._sortDir == 'DESC'){
+                		params.ordering = '-' + params.ordering;
+                	}
+                    delete params._sortField;
+                    delete params._sortDir;
+                }
+                return { params: params };
+            })
+            .addResponseInterceptor(function(data, operation, what, url, response, deferred) {
+            	// .. to look for getList operations
+            	if (operation === "getList") {
+            		// add totalCount according to doc. 
+            		// refer to https://github.com/marmelab/ng-admin/blob/master/doc/API-mapping.md#total-number-of-results
+            		response.totalCount = data.count;	
+            	}
+            	return data.results;
+            });
         }])
         .run(function () {
           

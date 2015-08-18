@@ -7,5 +7,8 @@
 			<h1>Tree Tags</h1>
 			<p class="lead">Right click to do the edit work</p>
 		</div>
+		<div>
+			<div js-tree="treeConfig" ng-model="treeData" should-apply="ignoreModelChanges()" tree="treeInstance" tree-events="ready:readyCB;create_node:createNodeCB"></div>
+		</div>
 	</div>
 </div>

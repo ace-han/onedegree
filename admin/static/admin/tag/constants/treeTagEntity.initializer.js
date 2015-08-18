@@ -20,7 +20,7 @@ define([
     	treeTag.listView()
 	        .title('All tree tags') // default title is "[Entity_name] list"
 	        .description('List of tree tags with infinite pagination') // description appears under the title
-	        .infinitePagination(true) // load pages as the user scrolls
+	        .infinitePagination(false) // load pages as the user scrolls
 	        .fields([
 	            nga.field('id').label('ID'), // The default displayed name is the camelCase field name. label() overrides id
 	            nga.field('name'), // the default list field type is "string", and displays as a string
