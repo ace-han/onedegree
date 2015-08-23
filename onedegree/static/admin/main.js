@@ -56,12 +56,13 @@ require.config({
 		, 'jstree': 'jstree/dist/jstree'
 		, 'ng-js-tree': 'ng-js-tree/dist/ngJsTree'
     	, 'admin': '../admin'	//since baseUrl is bower_component. Inside the admin/app.js will do relative path dependencies
+    	, 'common': '../common'
     	//, xxx: 'xxx'
     },
     shim: {
     	// read each bower.json to get dependencies info 
     	'jquery': {exports: 'jquery'}
-    	, 'angular': {exports: 'angular'}
+    	, 'angular': {exports: 'angular', deps: ['jquery']} // deps on jquery to ensure jsTree workable
     	, 'codemirror': {exports: 'codemirror'}
     	, 'numeral': {exports: 'numeral'}
     	, 'lodash': {exports: 'lodash'}
@@ -122,13 +123,12 @@ require.config({
 });
 
 require([
-        'jquery'
-        ,'angular'
+        'angular'
         ,'admin/namespace'
         ,'admin/app'
         ,'admin/routes'
     ],
-    function (jquery, angular, namespace) {
+    function (angular, namespace) {
 		angular.element(document).ready(function() {
             // since app/app depends on a lot of other stuff (by requirejs),
             // so we just need to bootstrap ['app'] then all stuff in this project is up

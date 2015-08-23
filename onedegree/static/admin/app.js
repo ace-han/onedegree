@@ -2,6 +2,7 @@ define([
     'angular'
     , './namespace'
     // add necessary app as you wish
+    , '../common/namespace'
     , './tag/namespace'
 //    , './account/namespace'
 //    , './contact/namespace'
@@ -13,6 +14,7 @@ define([
     //, './tag/entity' // migrate to constant, a constant is an IIFE complex object with method init
     // for the convenience of invocation
     , 'ng-admin'
+    , '../common/module.require'
     , './tag/module.require'
 //    , './account/module.require'
 //    , './contact/module.require'
@@ -22,6 +24,7 @@ define([
 //    , './quanquan/module.require'
 ],
 function (angular, namespace
+	, commonNamespace
     , tagNamespace
     ) {
     
@@ -33,9 +36,11 @@ function (angular, namespace
 
     var app = angular.module(namespace, 
         ['ng-admin'
+         , 'ngJsTree'
         //, 'ct.ui.router.extras.future', 'ct.ui.router.extras.statevis' // this two should be manually added
         //, 'angularMoment'
         // below enable those namespace to be injected
+        , commonNamespace
         , tagNamespace
 //        , contactNamespace, searchNamespace
 //        , groupNamespace, commonNamespace
@@ -72,8 +77,10 @@ function (angular, namespace
             
             admin.menu(rootMenuItem);
             nga.configure(admin);
-            
-            RestangularProvider.addFullRequestInterceptor(function(element, operation, what, url, headers, params, httpConfig) {
+            RestangularProvider
+            	.setBaseUrl(baseApiUrl)
+            	//.setBaseUrl(baseApiUrl)
+            	.addFullRequestInterceptor(function(element, operation, what, url, headers, params, httpConfig) {
                 if (operation == 'getList') {
                 	// filtering settings
                     if (params._filters) {
@@ -87,10 +94,15 @@ function (angular, namespace
                     }
                     
                     // pagination settings
-                    params.page = params._page;
-                    params.page_size = params._perPage;
-                    delete params._page;
-                    delete params._perPage;
+                    if(params._page){
+                    	params.page = params._page;
+                    	delete params._page;
+                    }
+                    
+                    if(params._perPage){
+                    	params.page_size = params._perPage;
+                    	delete params._perPage;
+                    }
                     
                     //ordering/sort settings
                     params.ordering = params._sortField || 'id';
@@ -109,8 +121,11 @@ function (angular, namespace
             		// refer to https://github.com/marmelab/ng-admin/blob/master/doc/API-mapping.md#total-number-of-results
             		response.totalCount = data.count;	
             	}
+            	console.log('response, interceptor');
             	return data.results;
-            });
+            	//return data; // so return data.result will suite our requirement
+            })
+            .setRequestSuffix('/');
         }])
         .run(function () {
           
