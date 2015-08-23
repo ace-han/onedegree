@@ -8,15 +8,19 @@ define([
         '$stateProvider'
         , '$urlRouterProvider'
         , function($stateProvider, $urlRouterProvider){
-        	//var quanquanNamespace = 'quanquan';
         	$stateProvider.state('tree-tags-tree', {
-        		parent: 'main',
+        		parent: 'main', // this main is defined in ng-admin
                 url: '/tree-tags/tree'
                 , cache: false
+                , resolve:{
+                	treeTagJson: ['tag.TreeTagService', function(treeTagService){
+                		return treeTagService.getAllTreeTags();
+                	}]
+                }
                 , views: {
                   '': {
                     templateUrl: '/static/admin/tag/templates/tree_view.html'
-                    //, controller: groupNamespace + '.GroupController as groupController'
+                    , controller: tagNamespace + '.TreeTagController as treeTagController'
                   }
                 }
         	})
