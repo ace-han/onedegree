@@ -15,10 +15,13 @@ function (humane, module, namespace) {
     return HumaneService;
 
     function HumaneService(){
-    	humane.timeout = 5000;
+    	humane.timeout = 3000;
         humane.clickToClose = true;
         humane.baseCls = 'humane-flatty';
         humane.addnCls = 'humane-flatty-info';
+        humane.info = humane.spawn({ addnCls: 'humane-flatty-info' });
+        humane.success = humane.spawn({ addnCls: 'humane-flatty-success' });
+        humane.error = humane.spawn({ addnCls: 'humane-flatty-error' });
         return humane;
     }
 });

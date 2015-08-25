@@ -16,7 +16,7 @@ require.config({
     	// the name defined here will be used in requirejs's define directive
     	// e.g.:
     	// define(['angular-bootstrap', 'angular-resource'])
-    	"jquery": "jquery/dist/jquery"
+    	"jquery": "jquery/dist/jquery.min"
 		, "angular": "angular/angular"	// since it's bower.json defines main: xxx
 		, "angular-bootstrap": "angular-bootstrap/ui-bootstrap-tpls" // bootstrap no required?
 		// "angular-bootstrap/ui-bootstrap"  // ui-bootstrap-tpls = ui-bootstrap + html defined templates

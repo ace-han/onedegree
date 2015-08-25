@@ -16,7 +16,7 @@ function (angular, module, namespace) {
 
     function TreeTagController($timeout, humane, treeTagJson, treeTagService) {
     	
-    	var originalData = treeTagJson;
+    	var lastEditData = treeTagJson;
     	var treeData = [];
     	var treeConfig = treeTagService.getTreeConfig();
     	
@@ -24,14 +24,13 @@ function (angular, module, namespace) {
         	controller = {
         		ignoreChanges: false
         		, newNode: {}
-        		, originalData: originalData
+        		, lastEditData: lastEditData
         		, treeData: treeData
         		, treeConfig: treeConfig
         		, applyModelChanges: applyModelChanges
         		, reCreateTree: reCreateTree
         		, simulateAsyncData: simulateAsyncData 
         		, addNewNode: addNewNode
-        		, setNodeType: setNodeType
         		, readyCB: readyCB
         		, createNodeCB: createNodeCB
         		, pasteCB: pasteCB
@@ -40,7 +39,7 @@ function (angular, module, namespace) {
         		
         	};
         
-        angular.copy(originalData, treeData);
+        angular.copy(lastEditData, treeData);
         
         
         angular.extend(vm, controller);
@@ -49,17 +48,29 @@ function (angular, module, namespace) {
         
         // should do move all the operations to service level
         // controller holds a copy for the lasttime edit jstreeData
+        // any change to the treeData will directly reflected in the tree...
         // if anything does not work out on service level recreate the tree with lasttime edit jstreeData
-        // or re-assign the jstreeData to controller.treeData and vm.ignoreChanges=false to do the re-recreation
-        var newId = 1;
+        // for tree re-recreation ngJsTree has it's own way (using version property in config)
+        // only notification on failure operations
         
         function applyModelChanges() {
             return !vm.ignoreChanges;
         }
         
+        function saveTreeStatus(changedNode){
+        	// this maybe slow if the amount of the nodes is large
+        	vm.lastEditData = angular.element.jstree.reference(vm.treeInstance).get_json();
+        	humane.log('Change applied. ' + changedNode.text + '('+changedNode.id + ')');
+        }
+        
+        function rollbackTreeNodeOperation(error){
+        	reCreateTree();
+            humane.error('Server Change failed! ' + angular.toJson(error.data) ); 
+        }
+        
         function reCreateTree() {
             vm.ignoreChanges = true;
-            angular.copy(vm.originalData,vm.treeData);
+            angular.copy(vm.lastEditData, vm.treeData);
             vm.treeConfig.version++;
         }
 
@@ -73,31 +84,17 @@ function (angular, module, namespace) {
             vm.treeData.push({ id : (newId++).toString(), parent : vm.newNode.parent, text : vm.newNode.text });
         }
 
-
-        function setNodeType() {
-            var item = _.findWhere(this.treeData, { id : this.selectedNode } );
-            item.type = this.newType;
-            //toaster.pop('success', 'Node Type Changed', 'Changed the type of node ' + this.selectedNode);
-            console.info('Node Type Changed', 'Changed the type of node ' + this.selectedNode);
-        }
-
         function readyCB() {
             $timeout(function() {
                 vm.ignoreChanges = false;
-                //toaster.pop('success', 'JS Tree Ready', 'Js Tree issued the ready event')
-                console.info('JS Tree Ready', 'Js Tree issued the ready event')
+                var jstreeInst = angular.element.jstree.reference(vm.treeInstance);
+                jstreeInst.open_all();
             });
         }
         
         function createNodeCB(event, data) {
-        	console.info('createNodeCB');
-        	humane.log('createNodeCB');
-        	var jstreeInst = data.instance;
-			jstreeInst.set_type(data.node, 'leaf');
-			if(jstreeInst.get_type(data.parent) === 'leaf'){
-				jstreeInst.set_type(data.parent, 'node');
-			}
-			jstreeInst.open_node(data.parent); // might as well do so instead of open_all
+        	treeTagService.addNode(data.node, data.node.parent)
+        					.then(saveTreeStatus, rollbackTreeNodeOperation)
         }
         
         function pasteCB(event, data) {

@@ -119,11 +119,11 @@ function (angular, namespace
             	if (operation === "getList") {
             		// add totalCount according to doc. 
             		// refer to https://github.com/marmelab/ng-admin/blob/master/doc/API-mapping.md#total-number-of-results
-            		response.totalCount = data.count;	
+            		response.totalCount = data.count;
+            		return data.results; // so return data.result will suite our requirement
             	}
             	console.log('response, interceptor');
-            	return data.results;
-            	//return data; // so return data.result will suite our requirement
+            	return data;
             })
             .setRequestSuffix('/');
         }])

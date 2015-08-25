@@ -30,10 +30,11 @@ function (angular, module, namespace) {
     	var service = {
         	getAllTreeTags: getAllTreeTags
             , getTreeConfig: getTreeConfig
+            , addNode: addNode
         }
 
         return service;
-
+    	
         function getAllTreeTags(){
         	// set the page_size insanely large to retrieve them all
         	return treeTagRestangular.getList({page_size: 100000})
@@ -47,6 +48,7 @@ function (angular, module, namespace) {
         					treeTag.type = (descendantCount>0)? 'node': 'leaf';
         					treeTag.text = treeTag.name;
         					treeTag.parent = treeTag.parent || '#';
+        					treeTag.data = {tree_id: treeTag.tree_id};
         				});
         				return treeTags;
         			});
@@ -54,6 +56,7 @@ function (angular, module, namespace) {
         }
 
         function getTreeConfig(){
+        	// write this way already make it new an object every time
         	var treeConfig = {
                     core : {
                         multiple : false,
@@ -89,8 +92,8 @@ function (angular, module, namespace) {
                     },
                     contextmenu: {select_node: false, items: customizedMenu},
                     dnd: {inside_pos: 'last', check_while_dragging: true},
-                    version : 1,
-                    plugins : ['types', 'contextmenu', 'unique', 'dnd' ]
+                    plugins: ['types', 'contextmenu', 'unique', 'dnd' ],
+                    version: 1
                 };
         	return treeConfig;
         }
@@ -114,5 +117,43 @@ function (angular, module, namespace) {
 			return items;
         }
 
+        function addNode(node, parent, jstreeInst){
+        	// assumption is that parentNode is never '#' (null in jstree)
+        	if(!jstreeInst){
+        		jstreeInst = angular.element.jstree.reference(node);
+        	}
+        	if(!angular.isObject(parent)){
+        		// it's an ParentID
+        		parent = jstreeInst.get_json(parent, {no_children: true, no_state: true})
+        	}
+        	var newNode = {
+        		name: node.text
+        		, parent: parent.id
+        		, tree_id: parent.data.tree_id
+        	}
+        	jstreeInst.set_type(node, 'leaf');
+        	if(jstreeInst.get_type(parent) === 'leaf'){
+    			jstreeInst.set_type(parent, 'node');
+    		}
+    		jstreeInst.open_node(parent); // might as well do so instead of open_all
+    		
+        	return treeTagRestangular.post(newNode)
+        					.then(function(data){
+        						node.id = data.id;
+        						node.data = {tree_id: data.tree_id};
+        						node.slug = data.slug;
+        						
+        						return node;	// return the newly added node
+        						
+        					}
+        					// if we do handle the error here it becomes a promise.resolve
+        					// let the controller do the job
+//        					, function(error){
+//        						return error.data;
+//        					}
+        					)
+    		
+        }
+        
     }
 });

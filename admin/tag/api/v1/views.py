@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 
-from tag.api.v1.serializers import TreeTagSerializer
+from admin.tag.api.v1.serializers import TreeTagSerializer
 from tag.models import TreeTag
 
 
