@@ -31,6 +31,7 @@ function (angular, module, namespace) {
         	getAllTreeTags: getAllTreeTags
             , getTreeConfig: getTreeConfig
             , addNode: addNode
+            , removeNodes: removeNodes
         }
 
         return service;
@@ -59,7 +60,7 @@ function (angular, module, namespace) {
         	// write this way already make it new an object every time
         	var treeConfig = {
                     core : {
-                        multiple : false,
+                        multiple : true,
                         animation: true,
                         error : function(error) {
                         	console.errror('treeCtrl: error from js tree - ' + error);
@@ -114,6 +115,7 @@ function (angular, module, namespace) {
 				// Root should not be deleted
 				delete items.remove;
 			}
+			delete items.ccp; // for simplicity, no Edit Function just dnd plugin will do the trick
 			return items;
         }
 
@@ -139,12 +141,12 @@ function (angular, module, namespace) {
     		
         	return treeTagRestangular.post(newNode)
         					.then(function(data){
-        						node.id = data.id;
+//        						node.id = data.id; // huge mistake here, use set_id method!!!
+        						jstreeInst.set_id(node, data.id);
         						node.data = {tree_id: data.tree_id};
         						node.slug = data.slug;
         						
         						return node;	// return the newly added node
-        						
         					}
         					// if we do handle the error here it becomes a promise.resolve
         					// let the controller do the job
@@ -152,7 +154,34 @@ function (angular, module, namespace) {
 //        						return error.data;
 //        					}
         					)
+        					
     		
+        }
+        
+        function removeNodes(nodes, jstreeInst){
+        	if(!jstreeInst){
+        		jstreeInst = angular.element.jstree.reference(nodes[0]);
+        	}
+        	angular.forEach(nodes, function(node, i){
+        		jstreeInst.delete_node(node);
+        		if(!jstreeInst.get_node(node.parent).children.length){
+    				jstreeInst.set_type(node.parent, 'leaf');
+    			}
+        	});
+        	
+			
+			
+			// only do a put update to set them inactive
+			// not in a on delete_node event but with a menu delete event
+//			return treeTagRestangular.put(node)
+//									.then(function(data){
+//						//				node.id = data.id; // huge mistake here, use set_id method!!!
+//										jstreeInst.set_id(node, data.id);
+//										node.data = {tree_id: data.tree_id};
+//										node.slug = data.slug;
+//										
+//										return node;	// return the newly added node
+//									})
         }
         
     }

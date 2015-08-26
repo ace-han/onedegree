@@ -29,13 +29,10 @@ function (angular, module, namespace) {
         		, treeConfig: treeConfig
         		, applyModelChanges: applyModelChanges
         		, reCreateTree: reCreateTree
-        		, simulateAsyncData: simulateAsyncData 
-        		, addNewNode: addNewNode
         		, readyCB: readyCB
         		, createNodeCB: createNodeCB
-        		, pasteCB: pasteCB
+        		, renameNodeCB: renameNodeCB
         		, moveNodeCB: moveNodeCB
-        		, deleteNodeCB: deleteNodeCB
         		
         	};
         
@@ -57,7 +54,12 @@ function (angular, module, namespace) {
             return !vm.ignoreChanges;
         }
         
-        function saveTreeStatus(changedNode){
+        function saveTreeStatus(newNode){
+        	// special for newly added node, without notification
+        	vm.lastEditData = angular.element.jstree.reference(vm.treeInstance).get_json();
+        }
+        
+        function saveTreeChangeStatus(changedNode){
         	// this maybe slow if the amount of the nodes is large
         	vm.lastEditData = angular.element.jstree.reference(vm.treeInstance).get_json();
         	humane.log('Change applied. ' + changedNode.text + '('+changedNode.id + ')');
@@ -74,16 +76,6 @@ function (angular, module, namespace) {
             vm.treeConfig.version++;
         }
 
-        function simulateAsyncData() {
-            vm.promise = $timeout(function(){
-                vm.treeData.push({ id : (newId++).toString(), parent : vm.treeData[0].id, text : 'Async Loaded' })
-            },3000);
-        }
-        
-        function addNewNode() {
-            vm.treeData.push({ id : (newId++).toString(), parent : vm.newNode.parent, text : vm.newNode.text });
-        }
-
         function readyCB() {
             $timeout(function() {
                 vm.ignoreChanges = false;
@@ -94,26 +86,27 @@ function (angular, module, namespace) {
         
         function createNodeCB(event, data) {
         	treeTagService.addNode(data.node, data.node.parent)
-        					.then(saveTreeStatus, rollbackTreeNodeOperation)
+        					.then(saveTreeStatus, rollbackTreeNodeOperation);
         }
         
-        function pasteCB(event, data) {
-        	console.info('pasteCB');
-        	var jstreeInst = data.instance;
-			for(var i=0; i<data.node.length; i++){
-				if(!jstreeInst.get_node(data.node[i].parent).children.length){
-					jstreeInst.set_type(data.node[i].parent, 'leaf');
-				}
-			}
-			
-			if(jstreeInst.get_type(data.parent) === 'leaf'){
-				jstreeInst.set_type(data.parent, 'node');
-			}
-			jstreeInst.open_node(data.parent);
+        function renameNodeCB(event, data) {
+        	console.log('renameNodeCB');
+        	console.log(event);
+        	console.log(data);
         }
 		
         function moveNodeCB(event, data) {
         	console.info('moveNodeCB');
+        	/*
+        	data = {
+        			node: node
+        			old_instance: $.jstree.plugins.dnd
+                	old_parent: "1",
+                	old_position: 1,
+                	parent: "2",
+                	position: 0,
+        	}
+        	*/
         	var jstreeInst = data.instance;
 			if(!jstreeInst.get_node(data.old_parent).children.length){
 				jstreeInst.set_type(data.old_parent, 'leaf');
@@ -124,13 +117,14 @@ function (angular, module, namespace) {
 			jstreeInst.open_node(data.parent);
         }
 		
-        function deleteNodeCB(event, data) {
-        	console.info('deleteNodeCB');
-        	var jstreeInst = data.instance;
-			if(!jstreeInst.get_node(data.node.parent).children.length){
-				jstreeInst.set_type(data.node.parent, 'leaf');
-			}
-        }        
+        // delegate the menu settings
+//        function deleteNodeCB(event, data) {
+//        	console.info(data.node.text);
+//        	
+//        	//treeTagService.removeNode(data.node)
+//				//.then(saveTreeChangeStatus, rollbackTreeNodeOperation);
+//        	
+//        }        
     }
 
 });
