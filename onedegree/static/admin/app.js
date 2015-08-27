@@ -53,7 +53,7 @@ function (angular, namespace
                 		 , RestangularProvider
                 		 , tagModuleEntities) {
         	var nga = NgAdminConfigurationProvider;
-        	var baseApiUrl = 'http://localhost:8090/api/v1/admin';
+        	var baseApiUrl = '/api/v1/admin';
             var admin = nga.application('One Degree Admin Site', true) // application main title and debug disabled
                 .baseApiUrl(baseApiUrl); // main API endpoint
             
