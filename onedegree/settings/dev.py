@@ -55,3 +55,4 @@ if not os.path.exists(EMAIL_FILE_PATH):
     os.makedirs(EMAIL_FILE_PATH, mode=int('0755', 8))
     
 update_log_level(LOGGING, 'DEBUG')
+LOGGING['loggers']['django.db.backends']['handlers']=['console']
