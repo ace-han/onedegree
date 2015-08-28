@@ -1,9 +1,9 @@
 from django.conf.urls import patterns, url, include
-from rest_framework import routers
+from rest_framework_bulk.routes import BulkRouter
 
 from admin.tag.api.v1 import views
 
-router = routers.DefaultRouter()
+router = BulkRouter()
 router.register(r'tree-tags', views.TreeTagViewSet)
 
 

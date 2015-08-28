@@ -1,9 +1,10 @@
 from rest_framework import serializers
+
 from tag.models import TreeTag
+from rest_framework_bulk import BulkListSerializer, BulkSerializerMixin
 
-
-class TreeTagSerializer(serializers.ModelSerializer):
+class TreeTagSerializer(BulkSerializerMixin, serializers.ModelSerializer):
     slug = serializers.SlugField(required=False)
     class Meta:
         model = TreeTag
-        #fields = ('url', 'username', 'email', 'groups')
+        list_serializer_class = BulkListSerializer
