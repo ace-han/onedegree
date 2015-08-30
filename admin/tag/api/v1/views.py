@@ -16,6 +16,7 @@ class TreeTagViewSet(BulkModelViewSet):
     queryset = TreeTag.objects.all()
     serializer_class = TreeTagSerializer
     filter_class = TreeTagGenericFilterSet
+    search_fields = ('name', 'slug', )
     
     def update(self, request, *args, **kwargs):
         # special for rename functionality
