@@ -79,7 +79,7 @@ function (angular, namespace
             nga.configure(admin);
             RestangularProvider
             	.setBaseUrl(baseApiUrl)
-            	//.setBaseUrl(baseApiUrl)
+            	.setRequestSuffix('/')
             	.addFullRequestInterceptor(function(element, operation, what, url, headers, params, httpConfig) {
                 if (operation == 'getList') {
                 	// filtering settings
@@ -87,7 +87,7 @@ function (angular, namespace
                         for (var filter in params._filters) {                        	
                             params[filter] = params._filters[filter];
                             if (filter == 'q'){
-                            	params[filter] = '@' + params[filter];	// fulltext search MySql supported only
+                            	params[filter] = params[filter];
                             }
                         }
                         delete params._filters;
@@ -125,10 +125,8 @@ function (angular, namespace
             		response.totalCount = data.count;
             		return data.results; // so return data.result will suite our requirement
             	}
-            	console.log('response, interceptor');
             	return data;
-            })
-            .setRequestSuffix('/');
+            });
         }])
         .run(function () {
           
