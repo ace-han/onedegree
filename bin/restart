@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+SCRIPT_HOME=$(cd "$(dirname "$0")"; pwd)
+
+PROJECT_NAME=onedegree
+# do it in a fierce way
+ps -ef | grep $PROJECT_NAME | awk '{print $2}' | xargs kill -9
+$SCRIPT_HOME/start "$@"

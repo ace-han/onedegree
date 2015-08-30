@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+if [ -z $1 ]
+then
+        echo "Usage: $0 [dev|qa|prod]"
+        exit 0
+fi
+ORIGINAL_DIR=`pwd`
+SCRIPT_HOME=$(cd "$(dirname "$0")"; pwd)
+
+PROJECT_NAME=onedegree
+export DJANGO_SETTINGS_MODULE=$PROJECT_NAME.settings.$1
+echo "Running env $1"
+
+source /home/ace/.bash_profile
+
+SCRIPT_HOME=$(cd "$(dirname "$0")"; pwd)
+PROJECT_HOME=$SCRIPT_HOME/..
+
+export PYENV_ROOT="${HOME}/.pyenv"
+
+if [ -d "${PYENV_ROOT}" ]; then
+  export PATH="${PYENV_ROOT}/bin:${PATH}"
+  eval "$(pyenv init -)"
+fi
+
+
+pyenv activate $PROJECT_NAME
+
+python $SCRIPT_HOME/../manage.py collectstatic -l --clear --noinput
+deactivate

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+SCRIPT_HOME=$(cd "$(dirname "$0")"; pwd)
+PROJECT_NAME=onedegree
+PID_FILE=$SCRIPT_HOME/$PROJECT_NAME.pid
+if [  ! -e $PID_FILE ]
+	then
+	echo "$PROJECT_NAME is not running."
+	exit 0
+fi
+ps -ef | grep `cat $PID_FILE` | grep -v grep
