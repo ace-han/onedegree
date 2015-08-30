@@ -72,12 +72,18 @@ define([
     		.addChild(nga.menu()
     				.title('Tree Tags (Tree View)')
     				.icon('<span class="fa fa-tree"></span>')
-    				.link('/tree-tags/tree'))
+    				.link('/tree-tags/tree')
+    				.active(function(path) {
+    		            return path.indexOf('/tree-tags/tree') === 0;
+    		        }))
 			.addChild(nga.menu(treeTag)
 					// entity's default route defined in ng-admin already
 					// if we do need this route url setting, might as well define another set routing provider
 					//.link('/tag/tree-tags')
-					.icon('<span class="fa fa-th-list"></span>'));
+					.icon('<span class="fa fa-th-list"></span>')
+					.active(function(path) {
+    		            return path.indexOf('/tree-tags') === 0 && path.indexOf('/tree-tags/tree') !== 0;
+    		        }));
 		
     	
     	admin.addEntity( treeTag );
