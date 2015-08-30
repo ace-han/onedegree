@@ -105,11 +105,14 @@ function (angular, namespace
                     }
                     
                     //ordering/sort settings
-                    params.ordering = params._sortField || 'id';
-                	if (params._sortDir == 'DESC'){
-                		params.ordering = '-' + params.ordering;
-                	}
-                    delete params._sortField;
+                    if(params._sortField){
+                    	// this sorting field on treetag is lft since it's mptt default behavior
+                    	params.ordering = params._sortField || 'id';
+                    	if (params._sortDir == 'DESC'){
+                    		params.ordering = '-' + params.ordering;
+                    	}
+                        delete params._sortField;
+                    }
                     delete params._sortDir;
                 }
                 return { params: params };

@@ -31,6 +31,7 @@ function (angular, module, namespace) {
         		, reCreateTree: reCreateTree
         		, readyCB: readyCB
         		, createNodeCB: createNodeCB
+        		, deleteNodeCB: deleteNodeCB
         		, renameNodeCB: renameNodeCB
         		, moveNodeCB: moveNodeCB
         		
@@ -59,10 +60,17 @@ function (angular, module, namespace) {
         	vm.lastEditData = angular.element.jstree.reference(vm.treeInstance).get_json();
         }
         
-        function saveTreeChangeStatus(changedNode){
+        function saveTreeChangeStatus(changedNodes){
         	// this maybe slow if the amount of the nodes is large
         	vm.lastEditData = angular.element.jstree.reference(vm.treeInstance).get_json();
-        	humane.log('Change applied. ' + changedNode.text + '('+changedNode.id + ')');
+        	var msgs = ['Change applied. Nodes:'];
+        	if(!angular.isArray(changedNodes)){
+        		changedNodes = [changedNodes];
+        	}
+        	angular.forEach(changedNodes, function(e, i){
+        		msgs.push(e.text + '('+e.id + ')\n');
+        	});
+        	humane.log(msgs.join(' '));
         }
         
         function rollbackTreeNodeOperation(error){
@@ -89,42 +97,27 @@ function (angular, module, namespace) {
         					.then(saveTreeStatus, rollbackTreeNodeOperation);
         }
         
+        // delegate the menu settings
+        function deleteNodeCB(event, data) {
+        	// TODO, for the simplicity, just hard delete it for the time being
+        	treeTagService.removeNodes(data.node)
+				.then(saveTreeChangeStatus, rollbackTreeNodeOperation);
+        	
+        }
+        
         function renameNodeCB(event, data) {
-        	console.log('renameNodeCB');
-        	console.log(event);
-        	console.log(data);
+        	// since slug need to be unique in server, 
+        	// and no other place in this tree view to rename the slug
+        	// might as well do it so
+        	data.node.reslugify = true;	
+        	treeTagService.updateNode(  data.node )
+        				.then(saveTreeChangeStatus, rollbackTreeNodeOperation);
         }
 		
         function moveNodeCB(event, data) {
-        	console.info('moveNodeCB');
-        	/*
-        	data = {
-        			node: node
-        			old_instance: $.jstree.plugins.dnd
-                	old_parent: "1",
-                	old_position: 1,
-                	parent: "2",
-                	position: 0,
-        	}
-        	*/
-        	var jstreeInst = data.instance;
-			if(!jstreeInst.get_node(data.old_parent).children.length){
-				jstreeInst.set_type(data.old_parent, 'leaf');
-			}
-			if(jstreeInst.get_type(data.parent) === 'leaf'){
-				jstreeInst.set_type(data.parent, 'node');
-			}
-			jstreeInst.open_node(data.parent);
+        	treeTagService.moveNode(  data.node, data.parent, data.position )
+							.then(saveTreeChangeStatus, rollbackTreeNodeOperation);
         }
-		
-        // delegate the menu settings
-//        function deleteNodeCB(event, data) {
-//        	console.info(data.node.text);
-//        	
-//        	//treeTagService.removeNode(data.node)
-//				//.then(saveTreeChangeStatus, rollbackTreeNodeOperation);
-//        	
-//        }        
     }
 
 });
