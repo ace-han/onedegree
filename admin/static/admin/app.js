@@ -5,7 +5,7 @@ define([
     , '../common/namespace'
     , './tag/namespace'
     , './auth/namespace'
-//    , './account/namespace'
+    , './account/namespace'
 //    , './contact/namespace'
 //    , './group/namespace'
 //    , './common/namespace'
@@ -17,7 +17,7 @@ define([
     , '../common/module.require'
     , './tag/module.require'
     , './auth/module.require'
-//    , './account/module.require'
+    , './account/module.require'
 //    , './contact/module.require'
 //    , './group/module.require'
 //    , './common/module.require'
@@ -27,6 +27,7 @@ function (angular, namespace
 	, commonNamespace
     , tagNamespace
     , authNamespace
+    , accountNamespace
     ) {
     
     /* 
@@ -44,18 +45,20 @@ function (angular, namespace
         , commonNamespace
         , tagNamespace
         , authNamespace
+        , accountNamespace
 //        , contactNamespace
 //        , groupNamespace, commonNamespace
-//        , quanquanNamespace
         ])
         .config(['NgAdminConfigurationProvider' 
                  , 'RestangularProvider'
                  , 'tag.entities'
                  , 'auth.entities'
+                 , 'account.entities'
                  , function(NgAdminConfigurationProvider
                 		 , RestangularProvider
                 		 , tagModuleEntities
-                		 , authModuleEntities) {
+                		 , authModuleEntities
+                		 , accountModuleEntities) {
         	var nga = NgAdminConfigurationProvider;
         	var baseApiUrl = '/api/v1/admin';
             var admin = nga.application('One Degree Admin Site', true) // application main title and debug disabled
@@ -78,6 +81,7 @@ function (angular, namespace
             // init methods have no return value, only edit the content of below references
             tagModuleEntities.init(nga, admin, rootMenuItem, baseApiUrl, entityMap);
             authModuleEntities.init(nga, admin, rootMenuItem, baseApiUrl, entityMap);
+            accountModuleEntities.init(nga, admin, rootMenuItem, baseApiUrl, entityMap);
             
             admin.menu(rootMenuItem);
             nga.configure(admin);

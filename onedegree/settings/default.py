@@ -50,12 +50,13 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
     'pytz',
     'rest_framework',
-    'taggit',
+    'taggit', # getting rid of django 1.9 warning. DB table like taggit_xxx are not necessary
     
     'onedegree',
     'admin',
     'tag',
     'authx',
+    'account',
     
 )
 

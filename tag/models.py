@@ -1,12 +1,14 @@
 
 from __future__ import unicode_literals
 
-# from django.db import models
-from mptt.models import MPTTModel
-from taggit.models import TagBase
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
 from mptt.fields import TreeForeignKey
+from mptt.models import MPTTModel
+from taggit.models import TagBase, ItemBase, GenericTaggedItemBase
 
 
+# from django.db import models
 def is_ascii(s):
     return all(ord(c) < 128 for c in s)
 
@@ -33,4 +35,36 @@ class TreeTag(MPTTModel, TagBase):
             # 'Mei Tenmei Ten Teki Sui Ashita ha Ashita no Kaze ga Fuku'
             d = Unihandecoder(lang='zh') 
             tag = d.decode( tag )
-        return super(TreeTag, self).slugify(tag, i) 
+        return super(TreeTag, self).slugify(tag, i)
+    
+    def __str__(self):
+        return self.name
+
+
+'''
+    below copy from taggit.models
+'''
+class TaggedItemBase(ItemBase):
+    tag = models.ForeignKey('tag.TreeTag', related_name="%(app_label)s_%(class)s_items")
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def tags_for(cls, model, instance=None, **extra_filters):
+        kwargs = extra_filters or {}
+        if instance is not None:
+            kwargs.update({
+                '%s__content_object' % cls.tag_relname(): instance
+            })
+            return cls.tag_model().objects.filter(**kwargs)
+        kwargs.update({
+            '%s__content_object__isnull' % cls.tag_relname(): False
+        })
+        return cls.tag_model().objects.filter(**kwargs).distinct()
+
+
+class TaggedItem(GenericTaggedItemBase, TaggedItemBase):
+    class Meta:
+        verbose_name = _("Tagged Item")
+        verbose_name_plural = _("Tagged Items")
