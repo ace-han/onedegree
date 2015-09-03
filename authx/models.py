@@ -66,6 +66,9 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
         "Returns the short name for the user."
         return (self.nickname or self.username).strip()
     
+    def __str__(self):
+        return self.username
+    
     
 class User(AbstractUser):
     """
