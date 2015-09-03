@@ -4,9 +4,9 @@ define([
     // add necessary app as you wish
     , '../common/namespace'
     , './tag/namespace'
+    , './auth/namespace'
 //    , './account/namespace'
 //    , './contact/namespace'
-//    , './search/namespace'
 //    , './group/namespace'
 //    , './common/namespace'
 //    , './quanquan/namespace'
@@ -16,9 +16,9 @@ define([
     , 'ng-admin'
     , '../common/module.require'
     , './tag/module.require'
+    , './auth/module.require'
 //    , './account/module.require'
 //    , './contact/module.require'
-//    , './search/module.require'
 //    , './group/module.require'
 //    , './common/module.require'
 //    , './quanquan/module.require'
@@ -26,6 +26,7 @@ define([
 function (angular, namespace
 	, commonNamespace
     , tagNamespace
+    , authNamespace
     ) {
     
     /* 
@@ -42,16 +43,19 @@ function (angular, namespace
         // below enable those namespace to be injected
         , commonNamespace
         , tagNamespace
-//        , contactNamespace, searchNamespace
+        , authNamespace
+//        , contactNamespace
 //        , groupNamespace, commonNamespace
 //        , quanquanNamespace
         ])
         .config(['NgAdminConfigurationProvider' 
                  , 'RestangularProvider'
                  , 'tag.entities'
+                 , 'auth.entities'
                  , function(NgAdminConfigurationProvider
                 		 , RestangularProvider
-                		 , tagModuleEntities) {
+                		 , tagModuleEntities
+                		 , authModuleEntities) {
         	var nga = NgAdminConfigurationProvider;
         	var baseApiUrl = '/api/v1/admin';
             var admin = nga.application('One Degree Admin Site', true) // application main title and debug disabled
@@ -73,7 +77,7 @@ function (angular, namespace
             
             // init methods have no return value, only edit the content of below references
             tagModuleEntities.init(nga, admin, rootMenuItem, baseApiUrl, entityMap);
-            
+            authModuleEntities.init(nga, admin, rootMenuItem, baseApiUrl, entityMap);
             
             admin.menu(rootMenuItem);
             nga.configure(admin);
