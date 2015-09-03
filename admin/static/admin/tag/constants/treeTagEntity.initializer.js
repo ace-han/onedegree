@@ -13,7 +13,7 @@ define([
 //    		throw 'No tag defined in entityMap';
 //    	}
     	var entityName = 'tree-tags'
-    	var treeTag = nga.entity(entityName)
+    	var entity = nga.entity(entityName)
 				        .baseApiUrl(moduleBaseApiUrl)
 						.label('Tree Tags (Tabular View)')
 	    		        .url(function(entityName, viewType, entityId){
@@ -28,7 +28,7 @@ define([
 	    		        	return url;
 	    		        });
     	
-    	treeTag.listView()
+    	entity.listView()
 	        .title('All tree tags') // default title is "[Entity_name] list"
 	        .description('List of tree tags with infinite pagination') // description appears under the title
 	        .infinitePagination(false) // (deprecated)load pages as the user scrolls. using pagination to reduce page load
@@ -38,7 +38,7 @@ define([
 	            , nga.field('slug')
 	            , nga.field('parent', 'reference')
 	            	.label('Parent')
-	            	.targetEntity(treeTag)
+	            	.targetEntity(entity)
 	            	.targetField(nga.field('name')),
 	            , nga.field('tree_id'),
 	            , nga.field('level')
@@ -50,27 +50,27 @@ define([
                     .template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'),
                 nga.field('parent', 'reference')
                     .label('Parent')
-                    .targetEntity(treeTag)
+                    .targetEntity(entity)
                     .targetField(nga.field('name'))
                     .remoteComplete(true, { refreshDelay: 300 })
                     .attributes({'placeholder': 'Filter by parent name'}),
             ])
 	        .listActions(['edit', 'delete']);
     	
-    	treeTag.creationView()
+    	entity.creationView()
 	        .fields([
 	            nga.field('name')					// the default list field type is "string", and displays as a string
 	            	.validation({ required: true }) 
 	            , nga.field('slug')
 	            , nga.field('parent', 'reference')
 	            	.label('Parent')
-	            	.targetEntity(treeTag)
+	            	.targetEntity(entity)
 	            	.targetField(nga.field('name'))
 	            	.validation({ required: true })
 	            	.remoteComplete(true, { refreshDelay: 0 })
 	        ]);
     	
-    	treeTag.editionView()
+    	entity.editionView()
         	.fields([
 					nga.field('name')					// the default list field type is "string", and displays as a string
 						.validation({ required: true })
@@ -87,7 +87,7 @@ define([
     				.active(function(path) {
     		            return path.indexOf('/tree-tags/tree') === 0;
     		        }))
-			.addChild(nga.menu(treeTag)
+			.addChild(nga.menu(entity)
 					// entity's default route defined in ng-admin already
 					// if we do need this route url setting, might as well define another set routing provider
 					//.link('/tag/tree-tags')
@@ -97,9 +97,9 @@ define([
     		        }));
 		
     	
-    	admin.addEntity( treeTag );
+    	admin.addEntity( entity );
     	
-    	entityMap[ entityName ] = treeTag;
+    	entityMap[ entityName ] = entity;
     }
     
 })

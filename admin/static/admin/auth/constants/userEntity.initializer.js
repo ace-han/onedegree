@@ -13,7 +13,7 @@ define([
 //    		throw 'No tag defined in entityMap';
 //    	}
     	var entityName = 'users'
-    	var user = nga.entity(entityName)
+    	var entity = nga.entity(entityName)
 				        .baseApiUrl(moduleBaseApiUrl)
 						.label('User')
 	    		        .url(function(entityName, viewType, entityId){
@@ -28,7 +28,7 @@ define([
 	    		        	return url;
 	    		        });
     	
-    	user.listView()
+    	entity.listView()
 	        .title('All registed users') // default title is "[Entity_name] list"
 	        .description('List of registed users') // description appears under the title
 	        .infinitePagination(false) // (deprecated)load pages as the user scrolls. using pagination to reduce page load
@@ -38,10 +38,13 @@ define([
 	            , nga.field('nickname')
 	            , nga.field('email', 'email')
 	            , nga.field('is_active', 'boolean')
+	            		.label('active')
 	            , nga.field('last_login', 'datetime')
 	            , nga.field('date_joined', 'date')
 	            , nga.field('is_staff', 'boolean')
+	            		.label('Staff')
 	            , nga.field('is_superuser', 'boolean')
+	            		.label('Admin')
 	        ])
 	        .filters([
                 nga.field('q', 'template')
@@ -55,7 +58,7 @@ define([
             ])
 	        .listActions(['edit', 'delete']);
     	
-    	user.creationView()
+    	entity.creationView()
 	        .fields([
 	            nga.field('username')					// the default list field type is "string", and displays as a string
 	            	.validation({ required: true }) 
@@ -65,7 +68,7 @@ define([
 	            , nga.field('email', 'email')
 	        ]);
     	
-    	user.editionView()
+    	entity.editionView()
         	.fields([
 					nga.field('username')					// the default list field type is "string", and displays as a string
 						.validation({ required: true })
@@ -76,13 +79,15 @@ define([
         	        ]);
     	
     	moduleMenu
-			.addChild(nga.menu(user)
-					.icon('<span class="fa fa-th-list"></span>'));
+			.addChild(
+					nga.menu(entity)
+						.icon('<span class="fa fa-user"></span>')
+					);
 		
     	
-    	admin.addEntity( user );
+    	admin.addEntity( entity );
     	
-    	entityMap[ entityName ] = user;
+    	entityMap[ entityName ] = entity;
     }
     
 })

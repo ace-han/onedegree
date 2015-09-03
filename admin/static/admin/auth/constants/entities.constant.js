@@ -22,7 +22,7 @@ function (module, namespace
         var authModuleMenu = nga.menu()
 							  .title('Auth')
 							  .link('/auth')
-							  .icon('<span class="fa fa-tags"></span>');
+							  .icon('<span class="fa fa-lock"></span>');
 
         userEntityInitializer.init(nga, admin, authModuleMenu, baseApiUrl + '/auth/', entityMap);
         
