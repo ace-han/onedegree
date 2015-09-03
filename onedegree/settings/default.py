@@ -55,6 +55,7 @@ INSTALLED_APPS = (
     'onedegree',
     'admin',
     'tag',
+    'authx',
     
 )
 
@@ -279,7 +280,7 @@ SOUTH_MIGRATION_MODULES = {
     'easy_thumbnails': 'easy_thumbnails.south_migrations',
 }
 
-AUTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = 'authx.User'
 
 # ONLY left the default account backend here for a later extend point
 AUTHENTICATION_BACKENDS = (
@@ -330,6 +331,6 @@ REST_FRAMEWORK = {
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=14),
-    'JWT_PAYLOAD_HANDLER': 'authx.utils.jwt_payload_handler',
+    'JWT_PAYLOAD_HANDLER': 'auth.utils.jwt_payload_handler',
 }
 
