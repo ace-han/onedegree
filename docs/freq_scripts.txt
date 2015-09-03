@@ -17,8 +17,8 @@ python manage.py migrate --settings=core.settings.prod
 python manage.py makemigrations <app_name> --settings=core.settings.qa
 python manage.py migrate <app_name> --settings=core.settings.qa
 
-python manage.py makemigrations quanquan --settings=core.settings.dev
-python manage.py migrate quanquan --settings=core.settings.dev
+python manage.py makemigrations onedegree --settings=core.settings.dev
+python manage.py migrate onedegree --settings=core.settings.dev
 
 * *Check if every works fine*
 python manage.py cms check
@@ -30,8 +30,8 @@ pip install -r xxx.txt
 
 * *South practice*
 python manage[.dev].py schemamigration [app_name] --initial
-Creating migrations directory at 'D:\Dev\workspace\gitlab\quanquan\xxx'...
-Creating __init__.py in 'D:\Dev\workspace\gitlab\quanquan\xxx'...
+Creating migrations directory at 'D:\Dev\workspace\gitlab\onedegree\xxx'...
+Creating __init__.py in 'D:\Dev\workspace\gitlab\onedegree\xxx'...
  + Added model
 Created 0001_initial.py. You can now apply this migration with: ./manage.py migrate [app_name]
 
@@ -43,7 +43,7 @@ python manage[.dev].py migrate [app_name] [version #]
 
 * *MySql-wise fresh initial setup* (run below by `root` in mysql console)
 CREATE DATABASE `onedegree` CHARACTER SET utf8 COLLATE utf8_general_ci;
-GRANT ALL ON `onedegree`.* TO `onedegree`@`%` IDENTIFIED BY 'onedegree';
+GRANT ALL ON `onedegree`.* TO `onedegree`@`localhost` IDENTIFIED BY 'onedegree';
 FLUSH PRIVILEGES;
 
 REVOKE ALL ON `onedegree`.* FROM onedegree@localhost;
@@ -72,11 +72,11 @@ mysql -u username -p -h localhost DATABASE-NAME < data.sql
 or 
 >$ python manage.dev.py shell
 
-from quanquan.models import Profile
+from onedegree.models import Profile
 for p in Profile.objects.all():
     p.set_password(p.password)
     p.save()
     
 * *Dump or Load data in django pattern*
-python manage.py dumpdata --settings=core.settings.dev quanquan --format=json > quanquan_data.json
-python manage.py loaddata quanquan_data[.json] --settings=quanquan.settings.dev
+python manage.py dumpdata --settings=core.settings.dev onedegree --format=json > onedegree_data.json
+python manage.py loaddata onedegree_data[.json] --settings=onedegree.settings.dev
