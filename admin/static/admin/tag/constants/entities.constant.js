@@ -30,15 +30,15 @@ function (module, namespace
     function init(nga, admin, rootMenuItem, baseApiUrl, entityMap){
     	
 
-        var tagModuleMenu = nga.menu()
+        var moduleMenu = nga.menu()
 							  .title('Tag')
 							  .link('/tag')
 							  .icon('<span class="fa fa-tags"></span>');
-
-        treeTagEntityInitializer.init(nga, admin, tagModuleMenu, baseApiUrl + '/tag/', entityMap);
+        var moduleBaseApiUrl = baseApiUrl + '/tag/';
+        treeTagEntityInitializer.init(nga, admin, moduleMenu, moduleBaseApiUrl, entityMap);
         
         
-        rootMenuItem.addChild( tagModuleMenu)
+        rootMenuItem.addChild( moduleMenu )
     }
 
 });

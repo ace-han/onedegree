@@ -19,15 +19,15 @@ function (module, namespace
     function init(nga, admin, rootMenuItem, baseApiUrl, entityMap){
     	
 
-        var authModuleMenu = nga.menu()
+        var moduleMenu = nga.menu()
 							  .title('Auth')
 							  .link('/auth')
-							  .icon('<span class="fa fa-lock"></span>');
-
-        userEntityInitializer.init(nga, admin, authModuleMenu, baseApiUrl + '/auth/', entityMap);
+							  .icon('<span class="fa fa-unlock-alt"></span>');
+        var moduleBaseApiUrl = baseApiUrl + '/auth/';
+        userEntityInitializer.init(nga, admin, moduleMenu, moduleBaseApiUrl, entityMap);
         
         
-        rootMenuItem.addChild( authModuleMenu)
+        rootMenuItem.addChild( moduleMenu)
     }
 
 });
