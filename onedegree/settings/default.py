@@ -57,6 +57,7 @@ INSTALLED_APPS = (
     'tag',
     'authx',
     'account',
+    'friend',
     
 )
 

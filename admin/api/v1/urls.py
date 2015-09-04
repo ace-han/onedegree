@@ -5,4 +5,5 @@ urlpatterns = patterns('',
     url(r'^tag/', include('admin.tag.api.v1.urls', namespace='tag')),
     url(r'^auth/', include('admin.auth.api.v1.urls', namespace='auth')),
     url(r'^account/', include('admin.account.api.v1.urls', namespace='account')),
+    url(r'^friend/', include('admin.friend.api.v1.urls', namespace='friend')),
 )

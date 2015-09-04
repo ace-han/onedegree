@@ -6,7 +6,7 @@ define([
     , './tag/namespace'
     , './auth/namespace'
     , './account/namespace'
-//    , './contact/namespace'
+    , './friend/namespace'
 //    , './group/namespace'
 //    , './common/namespace'
 //    , './quanquan/namespace'
@@ -18,7 +18,7 @@ define([
     , './tag/module.require'
     , './auth/module.require'
     , './account/module.require'
-//    , './contact/module.require'
+    , './friend/module.require'
 //    , './group/module.require'
 //    , './common/module.require'
 //    , './quanquan/module.require'
@@ -28,6 +28,7 @@ function (angular, namespace
     , tagNamespace
     , authNamespace
     , accountNamespace
+    , friendNamespace
     ) {
     
     /* 
@@ -46,19 +47,21 @@ function (angular, namespace
         , tagNamespace
         , authNamespace
         , accountNamespace
-//        , contactNamespace
-//        , groupNamespace, commonNamespace
+        , friendNamespace
+//        , groupNamespace
         ])
         .config(['NgAdminConfigurationProvider' 
                  , 'RestangularProvider'
                  , 'tag.entities'
                  , 'auth.entities'
                  , 'account.entities'
+                 , 'friend.entities'
                  , function(NgAdminConfigurationProvider
                 		 , RestangularProvider
                 		 , tagModuleEntities
                 		 , authModuleEntities
-                		 , accountModuleEntities) {
+                		 , accountModuleEntities
+                		 , friendModuleEntities) {
         	var nga = NgAdminConfigurationProvider;
         	var baseApiUrl = '/api/v1/admin';
             var admin = nga.application('One Degree Admin Site', true) // application main title and debug disabled
@@ -82,6 +85,7 @@ function (angular, namespace
             tagModuleEntities.init(nga, admin, rootMenuItem, baseApiUrl, entityMap);
             authModuleEntities.init(nga, admin, rootMenuItem, baseApiUrl, entityMap);
             accountModuleEntities.init(nga, admin, rootMenuItem, baseApiUrl, entityMap);
+            friendModuleEntities.init(nga, admin, rootMenuItem, baseApiUrl, entityMap);
             
             admin.menu(rootMenuItem);
             nga.configure(admin);
