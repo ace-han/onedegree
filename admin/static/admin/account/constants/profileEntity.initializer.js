@@ -141,14 +141,41 @@ define([
 		            , nga.field('high_school', 'reference')
 					        	.label('High School')
 					        	.targetEntity(entityMap['schools'])
-					        	.targetField(nga.field('name'))
+					        	.targetField(nga.field('name')
+//					        			// this may need ES6 to do so, not worth it right now
+//					        			.map(function addLevel(value, entry) {
+//					        				var padding = '';
+//					        				for(var i=0; i<3; i++){
+//					        					padding += '-';
+//					        				}
+//							                return padding + value;
+//							            })
+							            )
+							    .permanentFilters({ type: 'high_school'})
 					        	.remoteComplete(true)
 					, nga.field('college', 'reference')
 					        	.label('College')
+					        	.isDetailLink(false)
 					        	.targetEntity(entityMap['schools'])
 					        	.targetField(nga.field('name'))
+					        	.permanentFilters({ type: 'college'})
 					        	.remoteComplete(true)
+					        	
+					, nga.field('tags', 'reference_many')
+				        	.label('Tags')
+				        	.targetEntity(entityMap['tree-tags'])
+				        	.targetField(nga.field('name'))
+				        	.remoteComplete(true
+				        			, {
+					        		refreshDelay: 300
+					        		, searchQuery: function(search){
+					        			return {q: search};
+					        		}
+					        }
+				        	)
+				        	
         	        ]);
+        	        
     	
     	moduleMenu
 			.addChild(
