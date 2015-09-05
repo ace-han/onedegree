@@ -72,8 +72,9 @@ define([
         	.fields([
 					nga.field('username')					// the default list field type is "string", and displays as a string
 						.validation({ required: true })
-					, nga.field('password', 'password')
-						.validation({ required: true })
+					// TODO need to do it in another page view
+//					, nga.field('password', 'password')
+//						.validation({ required: true })
 					, nga.field('nickname')
 					, nga.field('email', 'email')
         	        ]);
