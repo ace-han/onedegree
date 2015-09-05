@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.db import models
 from taggit.managers import TaggableManager
+# from tag.fields import TaggableManager
 
 from tag.models import TaggedItem
 
@@ -45,7 +46,7 @@ class Profile(models.Model):
     college = models.ForeignKey('account.School', related_name='college',
                                 null=True, blank=True, on_delete=models.SET_NULL)
     # for company, let's delegate to tag... for the time being
-    tags = TaggableManager(through=TaggedItem)
+    tags = TaggableManager(through=TaggedItem)  # switch back to the original TaggableManager
     
     def __str__(self):
         return '%s' % (self.user or self.phone_num)
