@@ -1,6 +1,6 @@
 define([
       './services/_index'
-//    './configs/_index'
+      , './plugins/_index'
 	//'./controllers/_index'
 	//, './constants/_index'
 	//, './directives/_index'

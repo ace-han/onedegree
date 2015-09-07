@@ -31,7 +31,7 @@ require.config({
     	// read each bower.json to get dependencies info 
     	'jquery': {exports: 'jquery'}
     	, 'angular': {exports: 'angular', deps: ['jquery']} // deps on jquery to ensure jsTree workable
-
+    	, 'jstree': {exports: 'jstree', deps: ['jquery']}
     	, 'ng-js-tree': {deps: ['jquery', 'angular', 'jstree']}
 
     	// in this case just need to define(['ng-admin'], function(){}); will get all dependencies loaded

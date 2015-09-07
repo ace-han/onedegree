@@ -2,6 +2,7 @@ define([
     'angular'
     , '../module'
     , '../namespace'
+    , 'common/plugins/jstree.decorators'	// just ensure the decorators plugin get inited
     
 ],
 function (angular, module, namespace) {
@@ -49,7 +50,7 @@ function (angular, module, namespace) {
     	
         function getAllTreeTags(){
         	// set the page_size insanely large to retrieve them all
-        	return treeTagCollectionRestangular.getList({page_size: 100000})
+        	return treeTagCollectionRestangular.customGETLIST('cumulative_count', {page_size: 100000})
         			.then(function(response){
         				var treeTags = response;
         				angular.forEach(treeTags, function(treeTag, index){
@@ -60,7 +61,7 @@ function (angular, module, namespace) {
         					treeTag.type = (descendantCount>0)? 'node': 'leaf';
         					treeTag.text = treeTag.name;
         					treeTag.parent = treeTag.parent || '#';
-//        					treeTag.data = {tree_id: treeTag.tree_id};
+        					treeTag.data = {cumulative_count: treeTag.cumulative_count};
         				});
         				return treeTags;
         			});
@@ -104,7 +105,15 @@ function (angular, module, namespace) {
                     },
                     contextmenu: {select_node: false, items: customizedMenu},
                     dnd: {inside_pos: 'last', check_while_dragging: true},
-                    plugins: ['types', 'contextmenu', 'unique', 'dnd' ],
+                    decorators: {
+						'.jstree-anchor': function(nodeId, liContainer, targetElem){
+								targetElem = $(targetElem);
+								// this ==> jstreeInst
+								var node = this.get_json(nodeId, {no_children:true, no_id: true, no_state: true});
+								targetElem.after('<span >( ' + (node.data.cumulative_count || 0)+ ' )</span>');
+						}
+					},
+                    plugins: ['types', 'contextmenu', 'unique', 'dnd', 'decorators' ],
                     version: 1
                 };
         	return treeConfig;

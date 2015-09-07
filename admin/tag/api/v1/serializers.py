@@ -5,6 +5,7 @@ from rest_framework_bulk import BulkListSerializer, BulkSerializerMixin
 
 class TreeTagSerializer(BulkSerializerMixin, serializers.ModelSerializer):
     slug = serializers.SlugField(required=False, allow_null=True)
+    cumulative_count = serializers.IntegerField(required=False, allow_null=True)
     class Meta:
         model = TreeTag
         list_serializer_class = BulkListSerializer
