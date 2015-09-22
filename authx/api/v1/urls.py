@@ -1,12 +1,10 @@
 from django.conf.urls import patterns, url, include
+from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework import routers
 
-from tag.api.v1 import views
-
 router = routers.DefaultRouter()
-router.register(r'tree-tags', views.TreeTagViewSet)
-
 
 urlpatterns = patterns('',
-    url(r'^', include(router.urls)),
+    #url(r'^', include(router.urls)),
+    url(r'^login/$', obtain_jwt_token),
 )

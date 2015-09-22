@@ -333,6 +333,6 @@ REST_FRAMEWORK = {
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=14),
-    'JWT_PAYLOAD_HANDLER': 'auth.utils.jwt_payload_handler',
+    'JWT_PAYLOAD_HANDLER': 'rest_framework_jwt.utils.jwt_payload_handler',
 }
 
