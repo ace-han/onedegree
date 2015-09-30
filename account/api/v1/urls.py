@@ -4,8 +4,7 @@ from rest_framework import routers
 from account.api.v1 import views
 
 router = routers.DefaultRouter()
-router.register(r'schools', views.SchoolViewSet)
-router.register(r'profiles', views.ProfileViewSet)
+router.register(r'user-profiles', views.UserProfileViewSet)
 
 
 urlpatterns = patterns('',
