@@ -317,6 +317,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'authx.authentication.JSONWebTokenAuthenticationQS',    # almost for debug only
     ),
     # this should align the same as django GenericListView paginate_by, page_size mechanism
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',
@@ -328,13 +329,31 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
     #'PAGE_QUERY_PARAM': 'page', # sadly no this config, 'page' already is the default query param for this PageNumberPagination
     'PAGINATE_BY_PARAM': 'page_size',
-    
 }
 
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=14),
     #'JWT_PAYLOAD_HANDLER': 'rest_framework_jwt.utils.jwt_payload_handler',
     'JWT_PAYLOAD_HANDLER': 'authx.utils.jwt_payload_handler', # we should make the payload count
     #'JWT_RESPONSE_PAYLOAD_HANDLER': 'authx.utils.jwt_response_payload_handler',
+    
+    # default stuff with comments no more doc looking up
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LEEWAY': 0,    # This allows you to validate an expiration time which is in the past but no very far. 
+                        # For example, if you have a JWT payload with an expiration time set to 30 seconds after creation 
+                        # but you know that sometimes you will process it after 30 seconds, 
+                        # you can set a leeway of 10 seconds in order to have some margin
+    'JWT_AUDIENCE': None,   # This is a string that will be checked against the aud field of the token, if present. Default is None(fail if aud present on JWT).
+    'JWT_ISSUER': None,     # This is a string that will be checked against the iss field of the token. Default is None(do not check iss on JWT).
+
+    # for the time being if a user's token is compromised, 
+    # we could follow the suggestions referring to http://stackoverflow.com/questions/21978658/invalidating-json-web-tokens#answer-23089839 
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=14), # used to be seconds=300
+    'JWT_ALLOW_REFRESH': False,     # Enable token refresh functionality. Token issued from rest_framework_jwt.views.obtain_jwt_token will have an orig_iat field.
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7), #Limit on token refresh, is a datetime.timedelta instance. 
+                                                                # This is how much time after the original token that future tokens can be refreshed from.
+
+
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
 
