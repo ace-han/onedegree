@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 
 from account.api.v1.serializers import UserProfileSerializer
 from account.models import Profile
@@ -10,3 +10,4 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     """
     queryset = Profile.objects.all()
     serializer_class = UserProfileSerializer
+    permission_classes = (permissions.IsAuthenticated,)
