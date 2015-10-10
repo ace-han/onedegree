@@ -347,7 +347,20 @@ JWT_AUTH = {
     'JWT_ISSUER': None,     # This is a string that will be checked against the iss field of the token. Default is None(do not check iss on JWT).
 
     # for the time being if a user's token is compromised, 
-    # we could follow the suggestions referring to http://stackoverflow.com/questions/21978658/invalidating-json-web-tokens#answer-23089839 
+    # we could follow the suggestions 
+    # referring to http://stackoverflow.com/questions/21978658/invalidating-json-web-tokens#answer-23089839
+    ####################################################### TODO
+    # FUTURE SOLUTION!!!
+    # a storage saving invalidToken
+    # a crontab clear invalidToken on it's expiry time
+    # (since a person wonn't stick with the app for a really long time, we won't get a 288 token/person a day)
+    # the token's refreshing time is about 5~10min (or n-requests)? (although refreshing in a concurrent situation, it's fine)
+    # the token's expiry time is 1 day
+
+    # for reset password/logout case, save the current token to invalidToken storage (db or redis)
+    # of course clear the token on client side is necessary
+    ########################################################
+    
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=14), # used to be seconds=300
     'JWT_ALLOW_REFRESH': False,     # Enable token refresh functionality. Token issued from rest_framework_jwt.views.obtain_jwt_token will have an orig_iat field.
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7), #Limit on token refresh, is a datetime.timedelta instance. 
