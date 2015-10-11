@@ -8,5 +8,6 @@ router.register(r'user-profiles', views.UserProfileViewSet)
 
 
 urlpatterns = patterns('',
+    url('cities', 'account.api.v1.views.city_list', name='account_city_list'),
     url(r'^', include(router.urls)),
 )
