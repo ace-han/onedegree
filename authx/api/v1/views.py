@@ -23,11 +23,14 @@ def obtain_jwt_token(*args, **kwargs):
 @api_view(['POST'])
 def refresh_jwt_token(*args, **kwargs):
     kwargs.pop('version', None)
+    # need to store the old to an outdated_token table as an invalidated means
+    # TODO
     return drf_refresh_jwt_token(*args, **kwargs)
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def verify_jwt_token(*args, **kwargs):
     kwargs.pop('version', None)
+    # this verify only concerns username and integrity of the token
     return drf_verify_jwt_token(*args, **kwargs)
 
 def jwt_response_special_handling(response, user=None):
