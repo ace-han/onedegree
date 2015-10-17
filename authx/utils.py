@@ -46,6 +46,6 @@ def jwt_payload_handler(user):
     '''
     
     payload.setdefault('selfie_path', user.selfie_path)
-    payload.setdefault('nickname', user.nickname)
+    payload.setdefault('nickname', user.nickname or user.username)
     # payload.setdefault('roles', []) # TODO 
     return payload
