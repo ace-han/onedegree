@@ -14,7 +14,7 @@ from tag.models import TreeTag
 
 
 class Command(BaseCommand):
-    help = 'Batch import school from excel file'
+    help = 'Batch import Profile from excel file'
 
     def add_arguments(self, parser):
         parser.add_argument('filepath',
@@ -40,18 +40,21 @@ class Command(BaseCommand):
             phone_num = row[0].value or ''
             gender_str = (row[1].value or '').strip()
             if gender_str:
-                gender = gender_str.lower()=='male'
+                gender = 1 if gender_str.lower()=='male' else 0
             else:
                 gender = None 
             defaults = {
                 'gender': gender,
-                'city': row[2].value,
-                'description': row[3].value,
-                'high_school': name_high_school_dict.get(row[4].value.strip()),
-                'college': name_college_dict.get(row[5].value.strip()),
+                'city': row[2].value or '',
+                'description': row[3].value or '',
             }
+            if row[4].value:
+                defaults['high_school'] = name_high_school_dict.get(row[4].value.strip())
+            if row[5].value:
+                defaults['college'] = name_college_dict.get(row[5].value.strip())
             tag_strs = re.split('[,锛� ]+', row[6].value or '')
             tags = [ name_tag_dict[tag_name] for tag_name in tag_strs if tag_name in name_tag_dict ]
+            print('phone_num', phone_num, 'defaults', defaults)
             try:
                 profile, newly_created = Profile.objects.get_or_create(phone_num=phone_num, defaults=defaults)
             except Exception as e:

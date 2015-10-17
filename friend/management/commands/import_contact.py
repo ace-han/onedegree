@@ -9,13 +9,12 @@ import re
 from django.core.management.base import BaseCommand, CommandError
 from openpyxl import load_workbook
 
-from account.models import Profile, School
-from tag.models import TreeTag
+from account.models import Profile
 from friend.models import ContactRecord
 
 
 class Command(BaseCommand):
-    help = 'Batch import school from excel file'
+    help = 'Batch import Phone Contact from excel file'
 
     def add_arguments(self, parser):
         parser.add_argument('filepath',
