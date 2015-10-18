@@ -320,7 +320,9 @@ REST_FRAMEWORK = {
         'authx.authentication.JSONWebTokenAuthenticationQS',    # almost for debug only
     ),
     # this should align the same as django GenericListView paginate_by, page_size mechanism
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',
+    'DEFAULT_FILTER_BACKENDS': (
+                                #'url_filter.integrations.drf.DjangoFilterBackend',
+                                'rest_framework.filters.DjangoFilterBackend',
                                 'rest_framework.filters.SearchFilter',
                                 'rest_framework.filters.OrderingFilter', ), 
     'SEARCH_PARAM': 'q',
