@@ -6,6 +6,7 @@ from authx.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    # may need to refactor to another db
     class Meta:
         model = User
         fields = ('id', 'username', 'nickname', 'selfie_path', 'email')
