@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
-from account.api.v1.filterset import UserProfileFilterSet
+from account.api.v1.filtersets import UserProfileFilterSet
 from account.api.v1.serializers import UserProfileSerializer
 from account.models import Profile, CITY_CHOICES
 from authx.permissions import IsOwnerOrReadOnly

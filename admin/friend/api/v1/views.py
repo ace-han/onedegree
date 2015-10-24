@@ -1,7 +1,7 @@
 
 from rest_framework_bulk.generics import BulkModelViewSet
 
-from admin.friend.api.v1.filterset import ContactRecordGenericFilterSet
+from admin.friend.api.v1.filtersets import ContactRecordGenericFilterSet
 from admin.friend.api.v1.serializers import ContactRecordSerializer
 from friend.models import ContactRecord
 

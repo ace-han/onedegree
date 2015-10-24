@@ -3,7 +3,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework_bulk.generics import BulkModelViewSet
 
-from admin.tag.api.v1.filterset import TreeTagGenericFilterSet
+from admin.tag.api.v1.filtersets import TreeTagGenericFilterSet
 from admin.tag.api.v1.serializers import TreeTagSerializer, \
     TreeTagMoveNodeSerializer
 from tag.models import TreeTag, TaggedItem

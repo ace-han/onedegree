@@ -2,7 +2,7 @@
 from rest_framework_bulk.generics import BulkModelViewSet
 
 from account.models import School, Profile
-from admin.account.api.v1.filterset import SchoolGenericFilterSet, \
+from admin.account.api.v1.filtersets import SchoolGenericFilterSet, \
     ProfileGenericFilterSet
 from admin.account.api.v1.serializers import SchoolSerializer, ProfileSerializer
 

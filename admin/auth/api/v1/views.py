@@ -1,7 +1,7 @@
 
 from rest_framework_bulk.generics import BulkModelViewSet
 
-from admin.auth.api.v1.filterset import UserGenericFilterSet
+from admin.auth.api.v1.filtersets import UserGenericFilterSet
 from admin.auth.api.v1.serializers import UserSerializer
 from authx.models import User
 
