@@ -27,7 +27,7 @@ class Command(BaseCommand):
         row_counter = 1
         newly_created_counter, updated_counter = 0, 0
         '''
-        phone_num    gender    city        description    high_school    college    tags(comma separated)
+        phone_num    gender    city        whatsup    high_school    college    tags(comma separated)
         1234567890    male    beijing      aaa            A中学            A大学        child1,child2, test
         1234567891            shanghai     bbb            B中学            B大学        child11, child21, test11
         1234567892    female  guangzhou    ccc            C中学            C大学        child22, test21
@@ -46,7 +46,7 @@ class Command(BaseCommand):
             defaults = {
                 'gender': gender,
                 'city': row[2].value or '',
-                'description': row[3].value or '',
+                'whatsup': row[3].value or '',
             }
             if row[4].value:
                 defaults['high_school'] = name_high_school_dict.get(row[4].value.strip())
