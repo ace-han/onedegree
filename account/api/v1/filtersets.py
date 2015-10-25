@@ -1,7 +1,7 @@
 from django_filters.filters import CharFilter
 from django_filters.filterset import FilterSet
 
-from account.models import Profile
+from account.models import Profile, School
 
 
 class UserProfileFilterSet(FilterSet):
@@ -23,3 +23,7 @@ class UserProfileFilterSet(ModelFilterSet):
     class Meta:
         model = Profile
 '''
+        
+class SchoolFilterSet(FilterSet):
+    class Meta:
+        model = School

@@ -6,15 +6,20 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from account.api.v1.filtersets import UserProfileFilterSet
-from account.api.v1.serializers import UserProfileSerializer
-from account.models import Profile, CITY_CHOICES
+from account.api.v1.filtersets import UserProfileFilterSet, SchoolFilterSet
+from account.api.v1.serializers import UserProfileSerializer, SchoolSerializer
+from account.models import Profile, CITY_CHOICES, GENDER_TYPES, School
 from authx.permissions import IsAdminUser, SelfOnly
 
 
 @api_view(['GET'])
 def city_list(request, version=None):
-    result = [ {'code': city_tuple[0], 'label': city_tuple[1], } for city_tuple in CITY_CHOICES ]
+    result = [ {'value': city_tuple[0], 'label': city_tuple[1], } for city_tuple in CITY_CHOICES ]
+    return Response(result)
+
+@api_view(['GET'])
+def gender_list(request, version=None):
+    result = [ {'value': gender_tuple[0], 'label': gender_tuple[1], } for gender_tuple in GENDER_TYPES ]
     return Response(result)
 
 '''
@@ -62,4 +67,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         self.check_object_permissions(self.request, instance)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-        
+
+class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = School.objects.all()
+    serializer_class = SchoolSerializer
+    filter_class = SchoolFilterSet
