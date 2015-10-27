@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'pytz',
     'rest_framework',
     'taggit', # getting rid of django 1.9 warning. DB table like taggit_xxx are not necessary
+    'corsheaders',
     
     'onedegree',
     'admin',
@@ -63,6 +64,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # need to lie before  Django's CommonMiddleware as detail in doc
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -372,3 +374,34 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
 
+# CORS settings
+# since hybrid app's domain is `file://` will test what it look like in emulator
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_REGEX_WHITELIST = (
+    '^(https?://)?[^/]+\.madeinace\.com(:[0-9]+)?$', 
+)
+CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ALLOW_METHODS = (
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+)
+# specify which non-standard HTTP headers can be used when making the actual request
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'x-csrftoken',
+)
+# specify the number of seconds a client/browser can cache the preflight response
+CORS_PREFLIGHT_MAX_AGE = 86400
+# specify whether or not cookies are allowed to be included in cross-site HTTP requests
+CORS_ALLOW_CREDENTIALS = False
+# With this feature enabled, you also need to add the corsheaders.middleware.CorsPostCsrfMiddleware after django.middleware.csrf.CsrfViewMiddleware to undo the header replacement
+CORS_REPLACE_HTTPS_REFERER = False
