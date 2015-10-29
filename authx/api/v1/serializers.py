@@ -9,7 +9,7 @@ class UserProfileCreationSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ('phone_num', 'city')
 
-class UserCreationSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileCreationSerializer()
     class Meta:
         model = get_user_model()
@@ -18,6 +18,7 @@ class UserCreationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         ModelClass = self.Meta.model
         profile_data = validated_data.pop('profile')
+        # here may going to be an api call to so called auth module
         user = ModelClass.objects.create_user(**validated_data)
         # profile may be in the system already
         profile, newly_created = Profile.objects.get_or_create(phone_num=profile_data.pop('phone_num'),

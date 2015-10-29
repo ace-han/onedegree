@@ -1,13 +1,20 @@
+
+from django.contrib.auth import get_user_model
+from rest_condition import Or
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.mixins import UpdateModelMixin, RetrieveModelMixin
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
 from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.views import (obtain_jwt_token as drf_obtain_jwt_token,
                                       refresh_jwt_token as drf_refresh_jwt_token,
                                       verify_jwt_token as drf_verify_jwt_token)
 
-from authx.api.v1.serializers import UserCreationSerializer
+from authx.api.v1.serializers import UserSerializer
+from authx.permissions import IsAdminUser, SelfOnly
 
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -74,7 +81,7 @@ def register(request, version=None):
         'city': request.data.get('city'),
     }
     request.data['profile'] = composed_profile
-    serializer = UserCreationSerializer(data=request.data)
+    serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
         payload = jwt_payload_handler(user)
@@ -94,3 +101,22 @@ def login(*args, **kwargs):
         # response.data = {'token': xxxx, ...}
         response = jwt_response_special_handling(response)
     return response
+
+class UserRetrieveUpdateViewSet(RetrieveModelMixin,
+                                UpdateModelMixin, 
+                                GenericViewSet):
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,
+                          Or(IsAdminUser, SelfOnly), )
+    
+    '''
+    # as we are no ModelViewSet, this get_permissions method is not necessary
+    def get_permissions(self):
+        # based on the answer on stackoverflow, this is the best solution
+        # decorator perview on viewset is verified as not working 
+        # refer to http://stackoverflow.com/questions/25283797/django-rest-framework-add-additional-permission-in-viewset-update-method#answer-25290284
+        if self.action in ('list', 'destroy', ):
+            return [IsAdminUser(), ]
+        return super().get_permissions()
+    '''
