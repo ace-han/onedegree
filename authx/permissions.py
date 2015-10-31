@@ -1,5 +1,6 @@
 from rest_framework import permissions
 from rest_framework.permissions import BasePermission, IsAdminUser as DrfIsAdminUser
+from django.contrib.auth import get_user_model
 
 class IsAdminUser(DrfIsAdminUser):
     def has_object_permission(self, request, view, obj):
@@ -36,7 +37,14 @@ class IsOwnerOrReadOnly(BasePermission):
 
 class SelfOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
-        owner = obj.owner if hasattr(obj, 'owner') else obj.user
+        if hasattr(obj, 'owner'):
+            owner = obj.owner
+        elif isinstance(obj, (get_user_model(), )):
+            # for user edit himself
+            owner = obj
+        else:
+            owner = obj.user
+         
         if owner:
             return owner.id == request.user.id
         else:
