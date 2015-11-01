@@ -2,11 +2,15 @@
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework_bulk.generics import BulkModelViewSet
+from taggit.models import Tag
 
-from admin.tag.api.v1.filtersets import TreeTagGenericFilterSet
+from admin.tag.api.v1.serializers import TagSerializer
+from admin.tag.api.v1.filtersets import TreeTagGenericFilterSet, \
+    TagGenericFilterSet
 from admin.tag.api.v1.serializers import TreeTagSerializer, \
     TreeTagMoveNodeSerializer
 from tag.models import TreeTag, TaggedItem
+
 
 class TreeTagViewSet(BulkModelViewSet):
     """
@@ -53,3 +57,9 @@ class TreeTagViewSet(BulkModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+class TagViewSet(BulkModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    filter_class = TagGenericFilterSet
+    search_fields = ('name', 'slug', )

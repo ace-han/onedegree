@@ -2,9 +2,11 @@ define([
     '../module'
     , '../namespace'
     , './treeTagEntity.initializer'
+    , './tagEntity.initializer'
 ],
 function (module, namespace
-		, treeTagEntityInitializer) {
+		, treeTagEntityInitializer
+		, tagEntityInitializer) {
     'use strict';
 
     // special for tag module in ng-admin entity definition via an init method 
@@ -36,7 +38,7 @@ function (module, namespace
 							  .icon('<span class="fa fa-tags"></span>');
         var moduleBaseApiUrl = baseApiUrl + '/tag/';
         treeTagEntityInitializer.init(nga, admin, moduleMenu, moduleBaseApiUrl, entityMap);
-        
+        tagEntityInitializer.init(nga, admin, moduleMenu, moduleBaseApiUrl, entityMap);
         
         rootMenuItem.addChild( moduleMenu )
     }

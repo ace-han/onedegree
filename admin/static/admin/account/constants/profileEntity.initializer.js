@@ -119,6 +119,29 @@ define([
 				        	.targetEntity(entityMap['schools'])
 				        	.targetField(nga.field('name'))
 				        	.remoteComplete(true)
+				, nga.field('occupations', 'reference_many')
+				        	.targetEntity(entityMap['tree-tags'])
+				        	.targetField(nga.field('name'))
+				        	.remoteComplete(true
+				        			, {
+					        		refreshDelay: 300
+					        		, searchQuery: function(search){
+					        			return {q: search};
+					        		}
+					        }
+				        	)        	
+				, nga.field('tags', 'reference_many')
+			        	.label('Tags')
+			        	.targetEntity(entityMap['tags'])
+			        	.targetField(nga.field('name'))
+			        	.remoteComplete(true
+			        			, {
+				        		refreshDelay: 300
+				        		, searchQuery: function(search){
+				        			return {q: search};
+				        		}
+				        }
+			        	)
 	        ]);
     	
     	entity.editionView()
@@ -162,10 +185,20 @@ define([
 					        	.targetField(nga.field('name'))
 					        	.permanentFilters({ type: 'college'})
 					        	.remoteComplete(true)
-					        	
+					, nga.field('occupations', 'reference_many')
+				        	.targetEntity(entityMap['tree-tags'])
+				        	.targetField(nga.field('name'))
+				        	.remoteComplete(true
+				        			, {
+					        		refreshDelay: 300
+					        		, searchQuery: function(search){
+					        			return {q: search};
+					        		}
+					        }
+				        	)        	
 					, nga.field('tags', 'reference_many')
 				        	.label('Tags')
-				        	.targetEntity(entityMap['tree-tags'])
+				        	.targetEntity(entityMap['tags'])
 				        	.targetField(nga.field('name'))
 				        	.remoteComplete(true
 				        			, {

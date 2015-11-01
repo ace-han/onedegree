@@ -1,7 +1,9 @@
 from rest_framework import serializers
+from rest_framework_bulk import BulkListSerializer, BulkSerializerMixin
+from taggit.models import Tag
 
 from tag.models import TreeTag
-from rest_framework_bulk import BulkListSerializer, BulkSerializerMixin
+
 
 class TreeTagSerializer(BulkSerializerMixin, serializers.ModelSerializer):
     slug = serializers.SlugField(required=False, allow_null=True)
@@ -23,3 +25,9 @@ class TreeTagMoveNodeSerializer(serializers.Serializer):
                                                 ('left', 'Parent: target\'s parent, position: before target',),
                                                 ('right', 'Parent: target\'s parent, position: after target',), 
                                                 ))
+    
+class TagSerializer(BulkSerializerMixin, serializers.ModelSerializer):
+    slug = serializers.SlugField(required=False, allow_null=True)
+    class Meta:
+        model = Tag
+        list_serializer_class = BulkListSerializer

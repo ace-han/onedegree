@@ -3,6 +3,7 @@ from taggit.models import Tag
 
 from account.models import Profile, School
 from authx.models import User
+from tag.models import TreeTag
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -27,11 +28,16 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('id', 'name')
 
+class TreeTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TreeTag
+        fields = ('id', 'name')
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     high_school = SchoolSerializer()
     college = SchoolSerializer()
+    occupations = TreeTagSerializer(many=True)
     tags = TagSerializer(many=True)
     class Meta:
         model = Profile

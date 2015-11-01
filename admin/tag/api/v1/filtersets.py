@@ -1,9 +1,4 @@
-from django_filters.filters import MultipleChoiceFilter # , ModelMultipleChoiceFilter
-from django_filters.filterset import FilterSet
-
 # from common.filters.list import ListFilter
-from tag.models import TreeTag
-
 '''
     for future filtering in rest api
         1. Almost one FilterSet on one ViewSet(View/ View Function)
@@ -15,6 +10,12 @@ from tag.models import TreeTag
         6. Don't do ModelMultipleChoiceFilter on an id(pk) field unless it's a ForeignKey
 '''
 
+from django_filters.filters import MultipleChoiceFilter  # , ModelMultipleChoiceFilter
+from django_filters.filterset import FilterSet
+from taggit.models import Tag
+
+from tag.models import TreeTag
+
 
 class TreeTagGenericFilterSet(FilterSet):
     #id = ListFilter(name='id')
@@ -25,3 +26,13 @@ class TreeTagGenericFilterSet(FilterSet):
                               choices=TreeTag.objects.values_list('id', 'slug'))
     class Meta:
         model = TreeTag
+
+class TagGenericFilterSet(FilterSet):
+    #id = ListFilter(name='id')
+    #id = ModelMultipleChoiceFilter(name='id')    # don't do M  
+
+    id = MultipleChoiceFilter(name='id',
+                              # here extra parameter will be passed to field_class 
+                              choices=Tag.objects.values_list('id', 'slug'))
+    class Meta:
+        model = Tag

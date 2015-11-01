@@ -5,6 +5,7 @@ from admin.tag.api.v1 import views
 
 router = BulkRouter()
 router.register(r'tree-tags', views.TreeTagViewSet)
+router.register(r'tags', views.TagViewSet)
 
 
 urlpatterns = patterns('',

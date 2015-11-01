@@ -35,7 +35,8 @@ class TreeTag(MPTTModel, TagBase):
             # 'Mei Tenmei Ten Teki Sui Ashita ha Ashita no Kaze ga Fuku'
             d = Unihandecoder(lang='zh') 
             tag = d.decode( tag )
-        return super(TreeTag, self).slugify(tag, i)
+        # In this way, Tag object take curry bind self to this function
+        return TagBase.slugify(self, tag, i)
     
     def __str__(self):
         return self.name

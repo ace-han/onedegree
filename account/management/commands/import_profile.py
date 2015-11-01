@@ -4,10 +4,12 @@ Created on Sep 6, 2015
 @author: ace
 '''
 import argparse
+from functools import partial
 import re
 
 from django.core.management.base import BaseCommand, CommandError
 from openpyxl import load_workbook
+from taggit.models import Tag
 
 from account.models import Profile, School
 from tag.models import TreeTag
@@ -27,12 +29,13 @@ class Command(BaseCommand):
         row_counter = 1
         newly_created_counter, updated_counter = 0, 0
         '''
-        phone_num    gender    city        whatsup    high_school    college    tags(comma separated)
-        1234567890    male    beijing      aaa            A中学            A大学        child1,child2, test
-        1234567891            shanghai     bbb            B中学            B大学        child11, child21, test11
-        1234567892    female  guangzhou    ccc            C中学            C大学        child22, test21
+        phone_num    gender    city        whatsup    high_school    college         occupations(3 tops)               tags(comma separated)
+        1234567890    male    beijing      aaa            A中学            A大学        occupations1,occupations2        child1,child2, test
+        1234567891            shanghai     bbb            B中学            B大学        occupations                        child11, child21, test11
+        1234567892    female  guangzhou    ccc            C中学            C大学        child22, test21                  child22, test21
         '''
-        name_tag_dict = dict( (tag.name, tag) for tag in TreeTag.objects.all())
+        name_occupation_dict = dict( (tag.name, tag) for tag in TreeTag.objects.get(slug='occupation-tag-root').get_descendants(include_self=False))
+        name_tag_dict = dict( (tag.name, tag) for tag in Tag.objects.all() )
         name_high_school_dict = dict( (school.name, school) for school in School.objects.filter(type='high_school') )
         name_college_dict = dict( (school.name, school) for school in School.objects.filter(type='college') )
         for row in ws.iter_rows(row_offset=1):
@@ -52,8 +55,21 @@ class Command(BaseCommand):
                 defaults['high_school'] = name_high_school_dict.get(row[4].value.strip())
             if row[5].value:
                 defaults['college'] = name_college_dict.get(row[5].value.strip())
-            tag_strs = re.split('[,锛� ]+', row[6].value or '')
-            tags = [ name_tag_dict[tag_name] for tag_name in tag_strs if tag_name in name_tag_dict ]
+            occupations_strs = re.split('[,锛� ]+', row[6].value or '')
+            occupations = [ name_occupation_dict[tag_name] for tag_name in occupations_strs if tag_name in name_occupation_dict ]
+            tag_strs = re.split('[,锛� ]+', row[7].value or '')
+            tags = []
+            for tag_name in tag_strs:
+                if tag_name in name_tag_dict:
+                    tags.append(name_tag_dict[tag_name])
+                else:
+                    if not tag_name:
+                        continue
+                    tag = Tag(name=tag_name)
+                    # take advantage of Unihandecoder
+                    tag.slugify = partial(TreeTag.slugify, tag)   
+                    tag.save()
+                    tags.append(tag)
             print('phone_num', phone_num, 'defaults', defaults)
             try:
                 profile, newly_created = Profile.objects.get_or_create(phone_num=phone_num, defaults=defaults)
@@ -67,7 +83,10 @@ class Command(BaseCommand):
                         setattr(profile, key, value)
                     profile.save()
                     updated_counter += 1
-                if tags:
+                if occupations:
+                    profile.occupations.set(*occupations)
+                if tag_strs:
+                    # if the tag is not in the system it would create a new one
                     profile.tags.set(*tags)
         self.stdout.write('newly created: %d, updated: %d, total: %d' % (newly_created_counter, 
                                                                          updated_counter, 
