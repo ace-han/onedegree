@@ -3,6 +3,7 @@ from taggit.models import Tag
 
 from account.models import Profile, School
 from authx.models import User
+from onedegree.api.v1.serializers import DynamicFieldsModelSerializer
 from tag.models import TreeTag
 
 
@@ -33,7 +34,7 @@ class TreeTagSerializer(serializers.ModelSerializer):
         model = TreeTag
         fields = ('id', 'name')
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(DynamicFieldsModelSerializer):
     user = UserSerializer()
     high_school = SchoolSerializer()
     college = SchoolSerializer()
