@@ -40,7 +40,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 '''
 
 class UserProfileViewSet(viewsets.ModelViewSet):
-    queryset = Profile.objects.all()
+    queryset = Profile.objects.filter(user__isnull=False)
     serializer_class = UserProfileSerializer
     permission_classes = (IsAuthenticated,
                           Or(IsAdminUser, SelfOnly), )
