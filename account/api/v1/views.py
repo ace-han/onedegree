@@ -3,7 +3,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view, detail_route
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, \
+    IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from account.api.v1.filtersets import UserProfileFilterSet, SchoolFilterSet
@@ -49,7 +50,9 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         # based on the answer on stackoverflow, this is the best solution
         # decorator perview on viewset is verified as not working 
         # refer to http://stackoverflow.com/questions/25283797/django-rest-framework-add-additional-permission-in-viewset-update-method#answer-25290284
-        if self.action in ('list', 'destroy', ):
+        if self.action in ('retrieve', ):
+            return [IsAuthenticatedOrReadOnly(), ]
+        elif self.action in ('list', 'destroy', ):
             return [IsAdminUser(), ]
         return super().get_permissions()
     
