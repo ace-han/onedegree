@@ -4,7 +4,6 @@ Created on Sep 6, 2015
 @author: ace
 '''
 import argparse
-from functools import partial
 import re
 
 from django.core.management.base import BaseCommand, CommandError
@@ -12,7 +11,7 @@ from openpyxl import load_workbook
 from taggit.models import Tag
 
 from account.models import Profile, School
-from tag.models import TreeTag
+from tag.models import TreeTag, slugify as tag_slugify
 
 
 class Command(BaseCommand):
@@ -67,7 +66,7 @@ class Command(BaseCommand):
                         continue
                     tag = Tag(name=tag_name)
                     # take advantage of Unihandecoder
-                    tag.slugify = partial(TreeTag.slugify, tag)   
+                    tag.slugify = tag_slugify 
                     tag.save()
                     tags.append(tag)
             print('phone_num', phone_num, 'defaults', defaults)
