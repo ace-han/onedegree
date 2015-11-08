@@ -4,7 +4,7 @@ from taggit.models import Tag
 from account.models import Profile, School
 from authx.models import User
 from onedegree.api.v1.serializers import DynamicFieldsModelSerializer
-from tag.models import TreeTag
+from tag.models import TreeTag, slugify as tag_slugify
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -28,6 +28,7 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('id', 'name')
+        extra_kwargs = {'id': {'read_only': False,}, } 
 
 class TreeTagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,7 +49,19 @@ class UserProfileSerializer(DynamicFieldsModelSerializer):
             if attr in ('high_school', 'college'):
                 # a little hack here for the value(school) is {'id':0,'name':'x',}
                 value = School.objects.get(id=value.get('id'))
+            elif attr == 'tags':
+                tags = []
+                for tag_data in value:
+                    tag = Tag(**tag_data)
+                    if getattr(tag, 'id')==None:
+                        tag.slugify = tag_slugify
+                        # since instance.tags.set(*tags) donot handle those not in db
+                        tag.save()
+                    tags.append(tag)
+                instance.tags.set(*tags)
+                continue    # don't set the tags to the attrs   
             setattr(instance, attr, value)
+            
         instance.save()
 
         return instance
