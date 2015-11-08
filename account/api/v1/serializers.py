@@ -54,8 +54,8 @@ class UserProfileSerializer(DynamicFieldsModelSerializer):
                 for tag_data in value:
                     tag = Tag(**tag_data)
                     if getattr(tag, 'id')==None:
-                        tag.slugify = tag_slugify
-                        # since instance.tags.set(*tags) donot handle those not in db
+                        tag.slugify = tag_slugify(tag)
+                        # since instance.tags.set(*tags) does not handle those not in db
                         tag.save()
                     tags.append(tag)
                 instance.tags.set(*tags)

@@ -6,11 +6,15 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, \
     IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from taggit.models import Tag
 
 from account.api.v1.filtersets import UserProfileFilterSet, SchoolFilterSet
-from account.api.v1.serializers import UserProfileSerializer, SchoolSerializer
+from account.api.v1.serializers import UserProfileSerializer, SchoolSerializer, \
+    TagSerializer
 from account.models import Profile, CITY_CHOICES, GENDER_TYPES, School
 from authx.permissions import IsAdminUser, SelfOnly
+from friend.permissions import IsFriend
+from tag.models import slugify as tag_slugify
 
 
 @api_view(['GET'])
@@ -70,6 +74,33 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         self.check_object_permissions(self.request, instance)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+    
+    @detail_route(['POST', 'PUT', 'PATCH',],
+                  url_path='add-tags', 
+                  permission_classes=[IsAuthenticated, 
+                                      Or(IsFriend, SelfOnly, IsAdminUser)]) # TODO should be friend or self
+    def add_tags(self, request, pk=None, version=None):
+        '''
+            add stringified tags to profile
+        '''
+        # no need to do tag serializer here 
+        tags_data = request.data.get('tags')
+        instance = self.get_object()
+        
+        # this TaggableManager.add(tags) will do
+        # 1. str to tag conversion
+        # 2. create a new tag instance if the tag is not present in db
+        # 3. avoid duplication tags on the same instance
+        tags = []
+        for tag_data in tags_data:
+            tag = Tag(**tag_data)
+            if getattr(tag, 'id') is None:
+                tag.slugify = tag_slugify(tag)
+                # since instance.tags.set(*tags) does not handle those not in db
+                tag.save()
+            tags.append(tag)
+        instance.tags.add(*tags)
+        return Response(TagSerializer(instance.tags.all(), many=True).data)
 
 class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = School.objects.all()

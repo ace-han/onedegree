@@ -66,7 +66,7 @@ class Command(BaseCommand):
                         continue
                     tag = Tag(name=tag_name)
                     # take advantage of Unihandecoder
-                    tag.slugify = tag_slugify 
+                    tag.slugify = tag_slugify(tag)
                     tag.save()
                     tags.append(tag)
             print('phone_num', phone_num, 'defaults', defaults)
