@@ -68,20 +68,6 @@ class TreeTaggedItemBase(ItemBase):
     class Meta:
         abstract = True
 
-    @classmethod
-    def tags_for(cls, model, instance=None, **extra_filters):
-        kwargs = extra_filters or {}
-        if instance is not None:
-            kwargs.update({
-                '%s__content_object' % cls.tag_relname(): instance
-            })
-            return cls.tag_model().objects.filter(**kwargs)
-        kwargs.update({
-            '%s__content_object__isnull' % cls.tag_relname(): False
-        })
-        return cls.tag_model().objects.filter(**kwargs).distinct()
-
-
 class TreeTaggedItem(GenericTaggedItemBase, TreeTaggedItemBase):
     class Meta:
         verbose_name = _("Tree Tagged Item")
@@ -105,19 +91,6 @@ class TaggedItemBase(ItemBase):
     class Meta:
         abstract = True
 
-    @classmethod
-    def tags_for(cls, model, instance=None, **extra_filters):
-        kwargs = extra_filters or {}
-        if instance is not None:
-            kwargs.update({
-                '%s__content_object' % cls.tag_relname(): instance
-            })
-            return cls.tag_model().objects.filter(**kwargs)
-        kwargs.update({
-            '%s__content_object__isnull' % cls.tag_relname(): False
-        })
-        return cls.tag_model().objects.filter(**kwargs).distinct()
-    
 class TaggedItem(GenericTaggedItemBase, TaggedItemBase):
     class Meta:
         verbose_name = _("Tagged Item")
