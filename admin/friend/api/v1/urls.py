@@ -4,7 +4,7 @@ from rest_framework_bulk.routes import BulkRouter
 from admin.friend.api.v1 import views
 
 router = BulkRouter()
-router.register(r'contact-records', views.ContactRecordViewSet)
+router.register(r'phone-contact-records', views.PhoneContactRecordViewSet)
 
 
 urlpatterns = patterns('',

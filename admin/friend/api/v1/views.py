@@ -1,18 +1,18 @@
 
 from rest_framework_bulk.generics import BulkModelViewSet
 
-from admin.friend.api.v1.filtersets import ContactRecordGenericFilterSet
-from admin.friend.api.v1.serializers import ContactRecordSerializer
-from friend.models import ContactRecord
+from admin.friend.api.v1.filtersets import PhoneContactRecordGenericFilterSet
+from admin.friend.api.v1.serializers import PhoneContactRecordSerializer
+from friend.models import PhoneContactRecord
 
 
-class ContactRecordViewSet(BulkModelViewSet):
+class PhoneContactRecordViewSet(BulkModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = ContactRecord.objects.all()
-    serializer_class = ContactRecordSerializer
-    filter_class = ContactRecordGenericFilterSet
+    queryset = PhoneContactRecord.objects.all()
+    serializer_class = PhoneContactRecordSerializer
+    filter_class = PhoneContactRecordGenericFilterSet
     search_fields = ('to_phone_num', )
     
     

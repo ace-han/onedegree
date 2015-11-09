@@ -1,13 +1,13 @@
 from django_filters.filters import MultipleChoiceFilter  # , ModelMultipleChoiceFilter
 from django_filters.filterset import FilterSet
 
-from friend.models import ContactRecord
+from friend.models import PhoneContactRecord
 
 
-class ContactRecordGenericFilterSet(FilterSet):
+class PhoneContactRecordGenericFilterSet(FilterSet):
 
     id = MultipleChoiceFilter(name='id',
                               # here extra parameter will be passed to field_class 
-                              choices=ContactRecord.objects.values_list('id', 'to_phone_num'))
+                              choices=PhoneContactRecord.objects.values_list('id', 'to_phone_num'))
     class Meta:
-        model = ContactRecord
+        model = PhoneContactRecord

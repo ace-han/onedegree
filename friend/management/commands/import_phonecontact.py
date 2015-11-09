@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand, CommandError
 from openpyxl import load_workbook
 
 from account.models import Profile
-from friend.models import ContactRecord
+from friend.models import PhoneContactRecord
 
 
 class Command(BaseCommand):
@@ -43,7 +43,7 @@ class Command(BaseCommand):
                 continue
             
             # actually in this style means always newly_created
-            ContactRecord.objects.filter(from_profile=from_profile).delete()
+            PhoneContactRecord.objects.filter(from_profile=from_profile).delete()
             
             to_phone_num_strs = re.split('[,锛� ]+', str(row[1].value or '') )
             to_profiles = [ phone_num_profile_dict[to_phone_num] for to_phone_num in to_phone_num_strs if to_phone_num in phone_num_profile_dict ]
@@ -52,7 +52,7 @@ class Command(BaseCommand):
                     'to_phone_num': to_profile.phone_num
                 }
                 try:
-                    contact_record, newly_created = ContactRecord.objects.get_or_create(from_profile=from_profile, 
+                    contact_record, newly_created = PhoneContactRecord.objects.get_or_create(from_profile=from_profile, 
                                                                                  to_profile=to_profile, defaults=defaults)
                 except Exception as e:
                     raise CommandError('Line: %d encounter error: %s' % (row_counter, e, ) )

@@ -1,7 +1,7 @@
 define([
     '../module'
     , '../namespace'
-    , './contactRecordEntity.initializer'
+    , './phoneContactRecordEntity.initializer'
 ],
 function (module, namespace
 		, contactRecordEntityInitializer) {

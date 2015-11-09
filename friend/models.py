@@ -13,15 +13,15 @@ def are_friends(profile1, profile2):
         and profile1.college.id == profile2.college.id:
         return True
     
-    cr_qs = ContactRecord.objects.filter(
+    pcr_qs = PhoneContactRecord.objects.filter(
             Q(from_profile=profile1, to_profile=profile2)|Q(from_profile=profile2, to_profile=profile1)
     )
-    if cr_qs.exists():
+    if pcr_qs.exists():
         return True
     
     return False
 
-class ContactRecord(models.Model):
+class PhoneContactRecord(models.Model):
     from_profile = models.ForeignKey('account.Profile', related_name='from_profile')
     to_profile = models.ForeignKey('account.Profile', related_name='to_profile')
     # reduce table join query, and then a crontab to ensure it's synced with to_profile's phone_num daily

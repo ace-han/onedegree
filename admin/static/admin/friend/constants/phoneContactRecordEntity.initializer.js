@@ -8,10 +8,10 @@ define([
     }
     
     function init(nga, admin, moduleMenu, moduleBaseApiUrl, entityMap){
-    	var entityName = 'contact-records';
+    	var entityName = 'phone-contact-records';
     	var entity = nga.entity(entityName)
 				        .baseApiUrl(moduleBaseApiUrl)
-						.label('Contact Record')
+						.label('Phone Contact Record')
 	    		        .url(function(entityName, viewType, entityId){
 	    		        	// add a suffix to this to avoid new error
 	    		        	// refer to https://github.com/marmelab/ng-admin/issues/392?_pjax=%23js-repo-pjax-container
@@ -25,8 +25,8 @@ define([
 	    		        });
     	
     	entity.listView()
-	        .title('All contact record') // default title is "[Entity_name] list"
-	        .description('List of contact records') // description appears under the title
+	        .title('All phone contact records') // default title is "[Entity_name] list"
+	        .description('List of phone contact records') // description appears under the title
 	        .infinitePagination(false) // (deprecated)load pages as the user scrolls. using pagination to reduce page load
 	        .fields([
 	            nga.field('id').label('ID') // The default displayed name is the camelCase field name. label() overrides id
