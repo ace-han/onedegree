@@ -1,8 +1,7 @@
 from rest_framework import viewsets
-from taggit.models import Tag
 
 from tag.api.v1.serializers import TreeTagSerializer, TagSerializer
-from tag.models import TreeTag
+from tag.models import Tag, TreeTag
 
 
 class ReadOnlyTreeTagViewSet(viewsets.ReadOnlyModelViewSet):

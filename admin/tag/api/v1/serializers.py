@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from rest_framework_bulk import BulkListSerializer, BulkSerializerMixin
-from taggit.models import Tag
 
-from tag.models import TreeTag
+from tag.models import Tag, TreeTag
 
 
 class TreeTagSerializer(BulkSerializerMixin, serializers.ModelSerializer):

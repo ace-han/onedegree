@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from taggit.models import Tag
 
-from tag.models import TreeTag
+from tag.models import Tag, TreeTag 
 
 
 class TreeTagSerializer(serializers.ModelSerializer):

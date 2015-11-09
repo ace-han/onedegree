@@ -6,7 +6,6 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, \
     IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from taggit.models import Tag
 
 from account.api.v1.filtersets import UserProfileFilterSet, SchoolFilterSet
 from account.api.v1.serializers import UserProfileSerializer, SchoolSerializer, \
@@ -14,7 +13,7 @@ from account.api.v1.serializers import UserProfileSerializer, SchoolSerializer, 
 from account.models import Profile, CITY_CHOICES, GENDER_TYPES, School
 from authx.permissions import IsAdminUser, SelfOnly
 from friend.permissions import IsFriend
-from tag.models import slugify as tag_slugify
+from tag.models import Tag
 
 
 @api_view(['GET'])
@@ -93,12 +92,12 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         # 3. avoid duplication tags on the same instance
         tags = []
         for tag_data in tags_data:
-            tag = Tag(**tag_data)
-            if getattr(tag, 'id') is None:
-                tag.slugify = tag_slugify(tag)
-                # since instance.tags.set(*tags) does not handle those not in db
-                tag.save()
+            if 'id' in tag_data:
+                tag = Tag(**tag_data)
+            else:
+                tag = tag_data.get('name')
             tags.append(tag)
+                
         instance.tags.add(*tags)
         return Response(TagSerializer(instance.tags.all(), many=True).data)
 

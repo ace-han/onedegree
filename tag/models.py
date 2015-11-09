@@ -34,7 +34,7 @@ def do_slugify(instance, tagName, adjust=None):
         # ja_d.decode(s)
         # 'Mei Tenmei Ten Teki Sui Ashita ha Ashita no Kaze ga Fuku'
         d = Unihandecoder(lang='zh') 
-        tag = d.decode( tagName )
+        tagName = d.decode( tagName )
     # In this way, Tag object take curry bind self to this function
     return TagBase.slugify(instance, tagName, adjust)
 
@@ -45,7 +45,10 @@ class TreeTag(MPTTModel, TagBase):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
     
     # background_color = models.CharField(_(''), max_length=16)
-    
+    class Meta:
+        verbose_name = _("Tree Tag")
+        verbose_name_plural = _("Tree Tags")
+
     def slugify(self, tag, i=None):
         return do_slugify(self, tag, i)
     
@@ -55,8 +58,11 @@ class TreeTag(MPTTModel, TagBase):
 
 '''
     below copy from taggit.models
+    inheritance from ItemBase just because Field name “hiding” is not permitted in django
+    refer to http://stackoverflow.com/questions/2344751/in-django-model-inheritance-does-it-allow-you-to-override-a-parent-models-a#answer-2357942
+    classmethod as well 
 '''
-class TaggedItemBase(ItemBase):
+class TreeTaggedItemBase(ItemBase):
     tag = models.ForeignKey('tag.TreeTag', related_name="%(app_label)s_%(class)s_items")
 
     class Meta:
@@ -76,6 +82,42 @@ class TaggedItemBase(ItemBase):
         return cls.tag_model().objects.filter(**kwargs).distinct()
 
 
+class TreeTaggedItem(GenericTaggedItemBase, TreeTaggedItemBase):
+    class Meta:
+        verbose_name = _("Tree Tagged Item")
+        verbose_name_plural = _("Tree Tagged Items")
+
+'''
+    in order for future extension, so I've decided to overwritten this
+'''
+
+class Tag(TagBase):
+    class Meta:
+        verbose_name = _("Generic Tag")
+        verbose_name_plural = _("Generic Tags")
+
+    def slugify(self, tag, i=None):
+        return do_slugify(self, tag, i)
+
+class TaggedItemBase(ItemBase):
+    tag = models.ForeignKey('tag.Tag', related_name="%(app_label)s_%(class)s_items")
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def tags_for(cls, model, instance=None, **extra_filters):
+        kwargs = extra_filters or {}
+        if instance is not None:
+            kwargs.update({
+                '%s__content_object' % cls.tag_relname(): instance
+            })
+            return cls.tag_model().objects.filter(**kwargs)
+        kwargs.update({
+            '%s__content_object__isnull' % cls.tag_relname(): False
+        })
+        return cls.tag_model().objects.filter(**kwargs).distinct()
+    
 class TaggedItem(GenericTaggedItemBase, TaggedItemBase):
     class Meta:
         verbose_name = _("Tagged Item")

@@ -4,8 +4,7 @@ from django.db import models
 from taggit.managers import TaggableManager
 # from tag.fields import TaggableManager
 
-from tag.models import TaggedItem as TreeTaggedItem
-from taggit.models import TaggedItem
+from tag.models import TaggedItem, TreeTaggedItem
 
 
 SCHOOL_TYPES = (

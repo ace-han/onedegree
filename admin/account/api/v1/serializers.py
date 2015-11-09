@@ -1,10 +1,9 @@
 from rest_framework import serializers
 from rest_framework_bulk import BulkListSerializer, BulkSerializerMixin
-from tag.models import TreeTag
+from tag.models import Tag, TreeTag
 
 from account.models import School, Profile
 from admin.account.api.v1.fields import TaggedItemRelatedField
-from taggit.models import Tag
 
 
 class SchoolSerializer(BulkSerializerMixin, serializers.ModelSerializer):

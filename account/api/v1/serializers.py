@@ -1,10 +1,9 @@
 from rest_framework import serializers
-from taggit.models import Tag
 
 from account.models import Profile, School
 from authx.models import User
 from onedegree.api.v1.serializers import DynamicFieldsModelSerializer
-from tag.models import TreeTag, slugify as tag_slugify
+from tag.models import Tag, TreeTag
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -52,11 +51,10 @@ class UserProfileSerializer(DynamicFieldsModelSerializer):
             elif attr == 'tags':
                 tags = []
                 for tag_data in value:
-                    tag = Tag(**tag_data)
-                    if getattr(tag, 'id')==None:
-                        tag.slugify = tag_slugify(tag)
-                        # since instance.tags.set(*tags) does not handle those not in db
-                        tag.save()
+                    if 'id' in tag_data:
+                        tag = Tag(**tag_data)
+                    else:
+                        tag = tag_data.get('name')
                     tags.append(tag)
                 instance.tags.set(*tags)
                 continue    # don't set the tags to the attrs   

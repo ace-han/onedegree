@@ -2,14 +2,13 @@
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework_bulk.generics import BulkModelViewSet
-from taggit.models import Tag
 
 from admin.tag.api.v1.serializers import TagSerializer
 from admin.tag.api.v1.filtersets import TreeTagGenericFilterSet, \
     TagGenericFilterSet
 from admin.tag.api.v1.serializers import TreeTagSerializer, \
     TreeTagMoveNodeSerializer
-from tag.models import TreeTag, TaggedItem
+from tag.models import Tag, TreeTag, TreeTaggedItem
 
 
 class TreeTagViewSet(BulkModelViewSet):
@@ -49,7 +48,7 @@ class TreeTagViewSet(BulkModelViewSet):
         queryset = self.get_queryset()
         queryset = self.filter_queryset(queryset)
         queryset = queryset.model._tree_manager.add_related_count(queryset, 
-                        TaggedItem, 'tag', 'cumulative_count', cumulative=True) # accumulative affirmative
+                        TreeTaggedItem, 'tag', 'cumulative_count', cumulative=True) # accumulative affirmative
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

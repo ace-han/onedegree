@@ -12,9 +12,8 @@
 
 from django_filters.filters import MultipleChoiceFilter  # , ModelMultipleChoiceFilter
 from django_filters.filterset import FilterSet
-from taggit.models import Tag
 
-from tag.models import TreeTag
+from tag.models import Tag, TreeTag
 
 
 class TreeTagGenericFilterSet(FilterSet):
