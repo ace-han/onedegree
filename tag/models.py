@@ -84,6 +84,9 @@ class Tag(TagBase):
 
     def slugify(self, tag, i=None):
         return do_slugify(self, tag, i)
+    
+    def __str__(self):
+        return self.name
 
 class TaggedItemBase(ItemBase):
     tag = models.ForeignKey('tag.Tag', related_name="%(app_label)s_%(class)s_items")

@@ -38,6 +38,7 @@ class School(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     phone_num = models.CharField(max_length=24, unique=True, blank=True)
+    age = models.PositiveSmallIntegerField(null=True, blank=True)
     gender = models.SmallIntegerField(null=True, choices=GENDER_TYPES)
     city = models.CharField(max_length=16, choices=CITY_CHOICES)
     whatsup = models.CharField(max_length=255, blank=True)

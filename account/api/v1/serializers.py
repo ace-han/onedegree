@@ -1,7 +1,7 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from account.models import Profile, School
-from authx.models import User
 from onedegree.api.v1.serializers import DynamicFieldsModelSerializer
 from tag.models import Tag, TreeTag
 
@@ -9,7 +9,7 @@ from tag.models import Tag, TreeTag
 class UserSerializer(serializers.ModelSerializer):
     # may need to refactor to another db
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('id', 'username', 'nickname', 'selfie_path', 'email')
         
 class SchoolSerializer(serializers.ModelSerializer):

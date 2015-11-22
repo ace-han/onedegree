@@ -1,10 +1,16 @@
+from functools import reduce
+import operator
+
+from django.db.models.query_utils import Q
 from django.http.response import Http404
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404, ListAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from account.models import Profile
+from account.models import Profile, SCHOOL_TYPES
+from friend.api.v1.serializers import FriendProfileSerializer
 from friend.models import are_friends, PhoneContactRecord
 from tag.api.v1.serializers import TagSerializer
 from tag.models import TaggedItem
@@ -18,7 +24,7 @@ def has_friendship(request, version=None):
     result = {'is_friend': are_friends(self_profile, profile)}
     return Response(result)
 
-class FriendTagsApiView(ListAPIView):
+class FriendTagsListView(ListAPIView):
     #permission_classes = (AllowAny, )
     # queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -36,4 +42,41 @@ class FriendTagsApiView(ListAPIView):
         tag_qs = TaggedItem.tags_for(Profile, **extra_filters)
         return tag_qs
     
-friend_tags = FriendTagsApiView.as_view()
+friend_tags = FriendTagsListView.as_view()
+
+class AlumniProfileListView(ListAPIView):
+    serializer_class = FriendProfileSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def get_queryset(self):
+        user = self.request.user
+        profile_qs = Profile.objects.filter(user__isnull=False).exclude(user=user)
+        
+        # refer to http://www.django-rest-framework.org/api-guide/filtering/#filtering-against-query-parameters
+        # according to doc, filtering against query_params just like this
+        
+        valid_school_type_dict = dict(SCHOOL_TYPES)
+        q_objs = []
+        user_profile = get_object_or_404(Profile, user=user)
+        for school_type in valid_school_type_dict.keys():
+            school = getattr(user_profile, school_type)
+            if school is None:
+                continue
+            q_objs.append( Q(**{'%s'%school_type: school}) )
+        # avoid list all profiles
+        if not q_objs:
+            raise ValidationError('No %s set for current user'%school_type)
+        
+        q_obj = reduce(operator.or_, q_objs)
+        
+        school_type = self.request.query_params.get('school_type')
+        if school_type and school_type not in valid_school_type_dict:
+            raise ValidationError('Invalid school_type, valid options are %s' % (''.join(valid_school_type_dict.keys())))
+        if school_type:
+            school = getattr(user_profile, school_type)
+            q_obj &= Q(**{'%s'%school_type: school})
+        
+        profile_qs = profile_qs.filter(q_obj)
+        return profile_qs
+alumni = AlumniProfileListView.as_view()                             
+            
