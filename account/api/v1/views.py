@@ -53,7 +53,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         # based on the answer on stackoverflow, this is the best solution
         # decorator perview on viewset is verified as not working 
         # refer to http://stackoverflow.com/questions/25283797/django-rest-framework-add-additional-permission-in-viewset-update-method#answer-25290284
-        if self.action in ('retrieve', ):
+        if self.action in ('retrieve', 'userwise', ):
             return [IsAuthenticatedOrReadOnly(), ]
         elif self.action in ('list', 'destroy', ):
             return [IsAdminUser(), ]

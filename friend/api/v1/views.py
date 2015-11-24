@@ -19,7 +19,7 @@ from tag.models import TaggedItem
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def has_friendship(request, version=None):
-    profile = get_object_or_404(Profile.objects.filter(id=request.query_params.get('profile_id')))
+    profile = get_object_or_404(Profile.objects.filter(user=request.query_params.get('user_id')))
     self_profile = get_object_or_404(Profile.objects.filter(user=request.user))
     result = {'is_friend': are_friends(self_profile, profile)}
     return Response(result)
@@ -47,6 +47,7 @@ friend_tags = FriendTagsListView.as_view()
 class AlumniProfileListView(ListAPIView):
     serializer_class = FriendProfileSerializer
     permission_classes = (IsAuthenticated,)
+    search_fields = ('occupations__name', 'tags__name', )
     
     def get_queryset(self):
         user = self.request.user
