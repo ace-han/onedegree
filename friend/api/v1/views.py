@@ -2,7 +2,6 @@ from functools import reduce
 import operator
 
 from django.db.models.query_utils import Q
-from django.http.response import Http404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404, ListAPIView
@@ -13,7 +12,7 @@ from account.models import Profile, SCHOOL_TYPES
 from friend.api.v1.serializers import FriendProfileSerializer
 from friend.models import are_friends, PhoneContactRecord
 from tag.api.v1.serializers import TagSerializer
-from tag.models import TaggedItem
+from tag.models import TaggedItem, Tag
 
 
 @api_view(['GET'])
@@ -36,7 +35,7 @@ class FriendTagsListView(ListAPIView):
                     from_profile__user_id=self.kwargs['user_id']
                 ).values_list('to_profile_id', flat=True)
         if not pcr_qs.exists():
-            raise Http404
+            return Tag.objects.none()
         to_profile_qs = Profile.objects.filter(id__in=pcr_qs)
         extra_filters = {'%s__object_id__in'%(TaggedItem.tag_relname(), ): to_profile_qs}
         tag_qs = TaggedItem.tags_for(Profile, **extra_filters)
