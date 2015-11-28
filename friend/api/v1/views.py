@@ -54,29 +54,31 @@ class AlumniProfileListView(ListAPIView):
         
         # refer to http://www.django-rest-framework.org/api-guide/filtering/#filtering-against-query-parameters
         # according to doc, filtering against query_params just like this
-        
         valid_school_type_dict = dict(SCHOOL_TYPES)
-        q_objs = []
         user_profile = get_object_or_404(Profile, user=user)
-        for school_type in valid_school_type_dict.keys():
-            school = getattr(user_profile, school_type)
-            if school is None:
-                continue
-            q_objs.append( Q(**{'%s'%school_type: school}) )
-        # avoid list all profiles
-        if not q_objs:
-            raise ValidationError('No %s set for current user'%school_type)
-        
-        q_obj = reduce(operator.or_, q_objs)
-        
         school_type = self.request.query_params.get('school_type')
         if school_type and school_type not in valid_school_type_dict:
             raise ValidationError('Invalid school_type, valid options are %s' % (''.join(valid_school_type_dict.keys())))
         if school_type:
             school = getattr(user_profile, school_type)
-            q_obj &= Q(**{'%s'%school_type: school})
-        
-        profile_qs = profile_qs.filter(q_obj)
+            if school:
+                # should be a plain new q_obj
+                profile_qs = profile_qs.filter( Q(**{'%s'%school_type: school}) )
+            else:
+                profile_qs = profile_qs.none()
+        else:
+            q_objs = []
+            for school_type in valid_school_type_dict.keys():
+                school = getattr(user_profile, school_type)
+                if school is None:
+                    continue
+                q_objs.append( Q(**{'%s'%school_type: school}) )
+            # avoid list all profiles
+            if not q_objs:
+                #raise ValidationError('No %s set for current user'%school_type)
+                return Profile.objects.none()
+            q_obj = reduce(operator.or_, q_objs)
+            profile_qs = profile_qs.filter(q_obj)
         return profile_qs
 alumni = AlumniProfileListView.as_view()                             
             
