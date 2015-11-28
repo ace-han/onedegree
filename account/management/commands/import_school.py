@@ -27,7 +27,7 @@ class Command(BaseCommand):
         '''
         Line_0 name    type            remark
         Line_1 A中学    high_school    A中学
-        Line_2 B大学    high_school    B大学
+        Line_2 B大学    college        B大学
         '''
         for row in ws.iter_rows(row_offset=1):
             row_counter += 1
@@ -35,7 +35,7 @@ class Command(BaseCommand):
             
             defaults = {
                 'type': row[1].value,
-                'remark': row[2].value,
+                'remark': row[2].value or '',
             }
             try:
                 school, newly_created = School.objects.get_or_create(name=name, defaults=defaults)

@@ -8,10 +8,9 @@ import re
 
 from django.core.management.base import BaseCommand, CommandError
 from openpyxl import load_workbook
-from taggit.models import Tag
 
 from account.models import Profile, School
-from tag.models import TreeTag, slugify as tag_slugify
+from tag.models import Tag, TreeTag
 
 
 class Command(BaseCommand):
@@ -54,9 +53,10 @@ class Command(BaseCommand):
                 defaults['high_school'] = name_high_school_dict.get(row[4].value.strip())
             if row[5].value:
                 defaults['college'] = name_college_dict.get(row[5].value.strip())
-            occupations_strs = re.split('[,锛� ]+', row[6].value or '')
+            occupations_strs = re.split('[,锛� ]+', str( row[6].value or '' ))
             occupations = [ name_occupation_dict[tag_name] for tag_name in occupations_strs if tag_name in name_occupation_dict ]
-            tag_strs = re.split('[,锛� ]+', row[7].value or '')
+            tag_strs = re.split('[,锛� ]+', str( row[7].value or '' ) )
+            
             tags = []
             for tag_name in tag_strs:
                 if tag_name in name_tag_dict:
@@ -65,10 +65,9 @@ class Command(BaseCommand):
                     if not tag_name:
                         continue
                     tag = Tag(name=tag_name)
-                    # take advantage of Unihandecoder
-                    tag.slugify = tag_slugify(tag)
                     tag.save()
                     tags.append(tag)
+                    name_tag_dict[tag_name] = tag
             print('phone_num', phone_num, 'defaults', defaults)
             try:
                 profile, newly_created = Profile.objects.get_or_create(phone_num=phone_num, defaults=defaults)
