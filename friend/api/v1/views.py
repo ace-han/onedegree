@@ -50,15 +50,16 @@ class AlumniProfileListView(ListAPIView):
     
     def get_queryset(self):
         user = self.request.user
-        profile_qs = Profile.objects.filter(user__isnull=False).exclude(user=user)
-        
+        profile_qs = Profile.objects.filter(user__isnull=False).exclude(user=user)\
+                    .select_related('user', 'college', 'high_school') \
+                    .prefetch_related('tags')
         # refer to http://www.django-rest-framework.org/api-guide/filtering/#filtering-against-query-parameters
         # according to doc, filtering against query_params just like this
         valid_school_type_dict = dict(SCHOOL_TYPES)
         user_profile = get_object_or_404(Profile, user=user)
         school_type = self.request.query_params.get('school_type')
         if school_type and school_type not in valid_school_type_dict:
-            raise ValidationError('Invalid school_type, valid options are %s' % (''.join(valid_school_type_dict.keys())))
+            raise ValidationError('Invalid school_type, valid options are %s' % (','.join(valid_school_type_dict.keys())))
         if school_type:
             school = getattr(user_profile, school_type)
             if school:
