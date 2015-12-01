@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -39,9 +41,19 @@ class FriendProfileSerializer(DynamicFieldsModelSerializer):
     
     def get_tags(self, obj):
         tag_objs = obj.tags.all()
-        if len(tag_objs)>6:
-            tag_objs = tag_objs[:6]
-        result = []
+        query_string = ''
+        if 'request' in self.context:
+            query_string = self.context['request'].query_params.get('q')
+        result = OrderedDict()
+        if query_string:
+            # ensure target tags for display
+            for tag in tag_objs:
+                if query_string in tag.name:
+                    result[tag.name] = None
+        
         for tag in tag_objs:
-            result.append(tag.name)
-        return result
+            if len(result) >= 6:
+                break
+            result[tag.name] = None
+
+        return list(result.keys())
