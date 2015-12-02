@@ -46,7 +46,8 @@ friend_tags = FriendTagsListView.as_view()
 class AlumniProfileListView(ListAPIView):
     serializer_class = FriendProfileSerializer
     permission_classes = (IsAuthenticated,)
-    search_fields = ('occupations__name', 'tags__name', )
+    search_fields = ('occupations__name', 'tags__name', 
+                     'user__nickname', 'college__name', 'high_school__name', )
     
     def get_queryset(self):
         user = self.request.user
