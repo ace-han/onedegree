@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     url('^has-friendship/$', 'friend.api.v1.views.has_friendship', name='friend_has_friendship'),
     url('^users/(?P<user_id>\d+)/tags/$', 'friend.api.v1.views.friend_tags', name='friend_tags_by_profile'),
     url('^alumni/$', 'friend.api.v1.views.alumni', name='friend_alumni'),
+    url('^phone-contacts/$', 'friend.api.v1.views.phone_contacts', name='phone_contacts'),
     url(r'^', include(router.urls)),
 )

@@ -2,6 +2,7 @@ from functools import reduce
 import operator
 
 from django.db.models.query_utils import Q
+from rest_condition import Or
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404, ListAPIView
@@ -9,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from account.models import Profile, SCHOOL_TYPES
+from authx.permissions import IsAdminUser, SelfOnly
 from friend.api.v1.serializers import FriendProfileSerializer
 from friend.models import are_friends, PhoneContactRecord
 from tag.api.v1.serializers import TagSerializer
@@ -82,5 +84,24 @@ class AlumniProfileListView(ListAPIView):
             q_obj = reduce(operator.or_, q_objs)
             profile_qs = profile_qs.filter(q_obj)
         return profile_qs
-alumni = AlumniProfileListView.as_view()                             
-            
+alumni = AlumniProfileListView.as_view()
+
+class PhoneContactProfileListView(ListAPIView):
+    serializer_class = FriendProfileSerializer
+    permission_classes = (IsAuthenticated,
+                          Or(IsAdminUser, SelfOnly),)
+    search_fields = ('occupations__name', 'tags__name', 
+                     'user__nickname', 'college__name', 'high_school__name', )
+    
+    def get_queryset(self):
+        to_profile_id_qs = PhoneContactRecord.objects \
+            .filter(from_profile__user__id=self.request.user.id) \
+            .values_list('to_profile_id', flat=True)
+
+        profile_qs = Profile.objects.filter(id__in=to_profile_id_qs) \
+                    .select_related('user', 'college', 'high_school') \
+                    .prefetch_related('tags')
+        
+        return profile_qs
+   
+phone_contacts = PhoneContactProfileListView.as_view()   
