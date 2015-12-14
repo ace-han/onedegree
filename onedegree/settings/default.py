@@ -207,12 +207,8 @@ LOGGING = {
         }
     },
     'handlers': {
-        'null': {
-            'level':'DEBUG',
-            'class':'django.utils.log.NullHandler',
-        }
         # Log to a file that can be rotated by logrotate
-        ,'file': {
+        'file': {
             'class': 'logging.handlers.WatchedFileHandler',
             'filename': os.path.join(PROJECT_LOG_DIR, 'app.log'),
             'formatter': 'verbose'
