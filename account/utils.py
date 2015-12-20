@@ -1,6 +1,6 @@
 import phonenumbers
 
-def format_phonenumbers(phone_num_str, 
+def format_phonenumber(phone_num_str, 
                    quiet=False,
                    desired_format=phonenumbers.PhoneNumberFormat.E164, 
                    country_code='CN'):

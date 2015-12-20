@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand, CommandError
 from openpyxl import load_workbook
 
 from account.models import Profile, School
-from account.utils import format_phonenumbers
+from account.utils import format_phonenumber
 from tag.models import Tag, TreeTag
 
 
@@ -71,7 +71,7 @@ class Command(BaseCommand):
                     name_tag_dict[tag_name] = tag
             print('phone_num', phone_num, 'defaults', defaults)
             try:
-                phone_num = format_phonenumbers(phone_num)
+                phone_num = format_phonenumber(phone_num)
                 profile, newly_created = Profile.objects.get_or_create(phone_num=phone_num, defaults=defaults)
             except Exception as e:
                 raise CommandError('Line: %d encounter error: %s' % (row_counter, e, ) )

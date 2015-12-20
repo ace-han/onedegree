@@ -3,18 +3,11 @@ Created on Sep 6, 2015
 
 @author: ace
 '''
-from _functools import reduce
-from argparse import ArgumentTypeError
-from gettext import gettext as _
-import operator
-import re
 
-from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from django.db.models.query_utils import Q
 
 from account.models import Profile
-from account.utils import format_phonenumbers
+from account.utils import format_phonenumber
 
 
 class Command(BaseCommand):
@@ -35,7 +28,7 @@ class Command(BaseCommand):
         for p in p_qs:
             phone_num = p.phone_num
             try:
-                phone_num = format_phonenumbers(phone_num)
+                phone_num = format_phonenumber(phone_num)
                 p.save()
             except Exception as e:
                 err_msgs.append(err_msg_tpl % (p.id, p.phone_num, e))
