@@ -3,13 +3,16 @@ import operator
 
 from django.db.models.query_utils import Q
 from rest_condition import Or
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
-from rest_framework.generics import get_object_or_404, ListAPIView
+from rest_framework.generics import get_object_or_404, ListAPIView, \
+    ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from account.models import Profile, SCHOOL_TYPES
+from account.utils import format_phonenumber
 from authx.permissions import IsAdminUser, SelfOnly
 from friend.api.v1.serializers import FriendProfileSerializer
 from friend.models import are_friends, PhoneContactRecord
@@ -86,7 +89,7 @@ class AlumniProfileListView(ListAPIView):
         return profile_qs
 alumni = AlumniProfileListView.as_view()
 
-class PhoneContactProfileListView(ListAPIView):
+class PhoneContactProfileListView(ListCreateAPIView):
     serializer_class = FriendProfileSerializer
     permission_classes = (IsAuthenticated,
                           Or(IsAdminUser, SelfOnly),)
@@ -103,5 +106,40 @@ class PhoneContactProfileListView(ListAPIView):
                     .prefetch_related('tags')
         
         return profile_qs
+    
+    def create(self, request, *args, **kwargs):
+        bulk = isinstance(request.data, list)
+        data = request.data if bulk else [request.data] 
+        # no more serializers that is not necessary for this creation
+        # data should be a list of strings
+        formatted_phone_nums = []
+        for phone_num_str in data:
+            formatted_phone_num = format_phonenumber(phone_num_str, quiet=True)
+            if not formatted_phone_num:
+                continue
+            formatted_phone_nums.append(formatted_phone_num)
+        
+        p_qs = Profile.objects.filter(phone_num__in=formatted_phone_nums).only('id', 'phone_num')
+        records = []
+        
+        from_profile = get_object_or_404(Profile, user=self.request.user)
+        for p in p_qs:
+            records.append(
+                PhoneContactRecord(from_profile=from_profile, to_profile=p, to_phone_num=p.phone_num)
+            )
+        PhoneContactRecord.objects.filter(from_profile=from_profile).delete()
+        PhoneContactRecord.objects.bulk_create(records)
+        return Response(len(records), status=status.HTTP_201_CREATED)
    
-phone_contacts = PhoneContactProfileListView.as_view()   
+phone_contacts = PhoneContactProfileListView.as_view()
+
+class PhoneContactCountView(PhoneContactProfileListView):
+    '''
+        just for speed up on and reduce the network transmission
+    '''
+    def get(self, request, *args, **kwargs):
+        qs = self.get_queryset()
+        #return Response(qs.none().count())
+        return Response(qs.count())
+   
+phone_contact_count = PhoneContactCountView.as_view()
