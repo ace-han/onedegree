@@ -1,9 +1,9 @@
 from django.conf.urls import patterns, url, include
 from rest_framework import routers
-
+from friend.api.v1 import views
 
 router = routers.DefaultRouter()
-#router.register(r'friends', views.UserProfileViewSet)
+router.register(r'social-profiles', views.SocialProfileListView)
 
 
 urlpatterns = patterns('',

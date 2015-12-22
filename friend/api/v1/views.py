@@ -10,10 +10,12 @@ from rest_framework.generics import get_object_or_404, ListAPIView, \
     ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from account.models import Profile, SCHOOL_TYPES
 from account.utils import format_phonenumber
 from authx.permissions import IsAdminUser, SelfOnly
+from friend.api.v1.filtersets import SocialProfileFilterSet
 from friend.api.v1.serializers import FriendProfileSerializer
 from friend.models import are_friends, PhoneContactRecord
 from tag.api.v1.serializers import TagSerializer
@@ -143,3 +145,15 @@ class PhoneContactCountView(PhoneContactProfileListView):
         return Response(qs.count())
    
 phone_contact_count = PhoneContactCountView.as_view()
+
+
+class SocialProfileListView(ReadOnlyModelViewSet):
+    serializer_class = FriendProfileSerializer
+    permission_classes = (AllowAny, )
+    queryset = Profile.objects.filter(user__isnull=False)
+    # filter_class = SocialProfileFilterSet
+    # user__username is pretty rare
+    search_fields =  ('occupations__name', 'tags__name', 
+                     'user__nickname', 'college__name', 'high_school__name', )
+    
+    
