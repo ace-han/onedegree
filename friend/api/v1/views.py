@@ -15,7 +15,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from account.models import Profile, SCHOOL_TYPES
 from account.utils import format_phonenumber
 from authx.permissions import IsAdminUser, SelfOnly
-from friend.api.v1.filtersets import SocialProfileFilterSet
+#from friend.api.v1.filtersets import SocialProfileFilterSet
 from friend.api.v1.serializers import FriendProfileSerializer
 from friend.models import are_friends, PhoneContactRecord
 from tag.api.v1.serializers import TagSerializer
