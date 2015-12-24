@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 
 from account.models import Profile, CITY_CHOICES
 from onedegree.api.v1.serializers import DynamicFieldsModelSerializer
@@ -57,3 +58,9 @@ class FriendProfileSerializer(DynamicFieldsModelSerializer):
             result[tag.name] = None
 
         return list(result.keys())
+
+class SearchProfileSerializer(FriendProfileSerializer):
+    is_contact_point = SerializerMethodField()
+    
+    def get_is_contact_point(self):
+        return False

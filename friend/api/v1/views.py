@@ -1,11 +1,12 @@
+import base64
 from functools import reduce
 import operator
 
 from django.db.models.query_utils import Q
 from rest_condition import Or
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import api_view, permission_classes, list_route
+from rest_framework.exceptions import ValidationError, ParseError
 from rest_framework.generics import get_object_or_404, ListAPIView, \
     ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -15,13 +16,13 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from account.models import Profile, SCHOOL_TYPES
 from account.utils import format_phonenumber
 from authx.permissions import IsAdminUser, SelfOnly
-#from friend.api.v1.filtersets import SocialProfileFilterSet
 from friend.api.v1.serializers import FriendProfileSerializer
 from friend.models import are_friends, PhoneContactRecord
 from tag.api.v1.serializers import TagSerializer
 from tag.models import TaggedItem, Tag
 
 
+#from friend.api.v1.filtersets import SocialProfileFilterSet
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def has_friendship(request, version=None):
@@ -156,4 +157,60 @@ class SocialProfileListView(ReadOnlyModelViewSet):
     search_fields =  ('occupations__name', 'tags__name', 
                      'user__nickname', 'college__name', 'high_school__name', )
     
+    def _prepare_route_result(self, items):
+        profile_ids = ['%s'% item['id'] for item in items]
+        route_code = base64.urlsafe_b64encode( ','.join(profile_ids).encode('utf-8') )
+        # We need string instead of bytes
+        route_code = route_code.decode('utf-8')
+        result = {
+            'route_code': route_code,
+            'items': items,
+        }
+        return result
+        
+    def _extract_route_profile_ids(self, route_code):
+        try:
+            profile_ids = base64.urlsafe_b64decode(route_code.encode('utf-8'))
+            profile_ids = profile_ids.decode('utf-8')
+        except Exception as e:
+            raise ParseError('route_code is malformed')
+        
+        profile_ids = profile_ids.split(',')
+        return profile_ids
+        
+    @list_route(['GET',],
+                  url_path='social-routes'
+                  #, permission_classes=[IsAuthenticated,]
+            )
+    def social_routes(self, request, *args, **kwargs):
+        '''
+            return a list of [
+                {profile_id: ''}
+            ]
+        '''
+        target_user_id = request.query_params.get('target_user')
+        target_profile = get_object_or_404(Profile, user__id=4)
+        to_profile_ids = PhoneContactRecord.objects.filter(from_profile=target_profile).values_list('to_profile_id', flat=True)
+        p_qs = Profile.objects.filter(id__in=to_profile_ids)
+        
+        serializer = self.get_serializer(p_qs, many=True)
+        result = []
+        
+        result.append( self._prepare_route_result(serializer.data[:2]) )
+        result.append( self._prepare_route_result(serializer.data[2:5]) )
+        result.append( self._prepare_route_result(serializer.data[5:9]) )
+        result.append( self._prepare_route_result(serializer.data[9:15]) )
+        return Response(result)
+    
+    @list_route(['GET',],
+                  url_path='social-route-detail'
+                  #, permission_classes=[IsAuthenticated,]
+            )
+    def social_route_detail(self, request, *args, **kwargs):
+        route_code = request.query_params.get('route_code')
+        profile_ids = self._extract_route_profile_ids(route_code)
+        
+        queryset = Profile.objects.filter(id__in=profile_ids)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
     
