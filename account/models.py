@@ -40,7 +40,7 @@ class Profile(models.Model):
     phone_num = models.CharField(max_length=24, unique=True, blank=True)
     age = models.PositiveSmallIntegerField(null=True, blank=True)
     gender = models.SmallIntegerField(null=True, choices=GENDER_TYPES)
-    city = models.CharField(max_length=16, choices=CITY_CHOICES)
+    city = models.CharField(max_length=16, choices=CITY_CHOICES, blank=True)
     whatsup = models.CharField(max_length=255, blank=True)
     high_school = models.ForeignKey('account.School', related_name='high_school',
                                     null=True, blank=True, on_delete=models.SET_NULL)

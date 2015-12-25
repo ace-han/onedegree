@@ -3,6 +3,7 @@ from functools import reduce
 import operator
 
 from django.db.models.query_utils import Q
+from django.db.transaction import atomic
 from rest_condition import Or
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, list_route
@@ -110,6 +111,7 @@ class PhoneContactProfileListView(ListCreateAPIView):
         
         return profile_qs
     
+    @atomic
     def create(self, request, *args, **kwargs):
         bulk = isinstance(request.data, list)
         data = request.data if bulk else [request.data] 
@@ -124,6 +126,14 @@ class PhoneContactProfileListView(ListCreateAPIView):
         
         p_qs = Profile.objects.filter(phone_num__in=formatted_phone_nums).only('id', 'phone_num')
         records = []
+        # create for those not in the system
+        phone_numm_profile_dict = dict((p.phone_numm, p) for p in p_qs)
+        p_qs = list(p_qs)
+        for formatted_phone_num in formatted_phone_nums:
+            if formatted_phone_num not in phone_numm_profile_dict:
+                p = Profile(phone_num=formatted_phone_num)
+                p.save()
+                p_qs.append(p)
         
         from_profile = get_object_or_404(Profile, user=self.request.user)
         for p in p_qs:
