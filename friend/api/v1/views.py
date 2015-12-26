@@ -172,6 +172,9 @@ class SocialProfileListView(ReadOnlyModelViewSet):
         route_code = base64.urlsafe_b64encode( ','.join(profile_ids).encode('utf-8') )
         # We need string instead of bytes
         route_code = route_code.decode('utf-8')
+        items = map(lambda x: {'is_from_mobile_contact': False, 
+                               'display_name': x['user__nickname'] or x['user__username'],}, 
+                items)
         result = {
             'route_code': route_code,
             'items': items,
@@ -199,17 +202,16 @@ class SocialProfileListView(ReadOnlyModelViewSet):
             ]
         '''
         target_user_id = request.query_params.get('target_user')
-        target_profile = get_object_or_404(Profile, user__id=4)
+        target_profile = get_object_or_404(Profile, user_id=4)
         to_profile_ids = PhoneContactRecord.objects.filter(from_profile=target_profile).values_list('to_profile_id', flat=True)
-        p_qs = Profile.objects.filter(id__in=to_profile_ids)
+        p_qs = Profile.objects.filter(id__in=to_profile_ids).values('id', 'user__nickname', 'user__username')
         
-        serializer = self.get_serializer(p_qs, many=True)
+        p_qs = list(p_qs)
         result = []
-        
-        result.append( self._prepare_route_result(serializer.data[:2]) )
-        result.append( self._prepare_route_result(serializer.data[2:5]) )
-        result.append( self._prepare_route_result(serializer.data[5:9]) )
-        result.append( self._prepare_route_result(serializer.data[9:15]) )
+        result.append( self._prepare_route_result(p_qs[:2]) )
+        result.append( self._prepare_route_result(p_qs[2:5]) )
+        result.append( self._prepare_route_result(p_qs[5:9]) )
+        result.append( self._prepare_route_result(p_qs[9:15]) )
         return Response(result)
     
     @list_route(['GET',],
