@@ -1,9 +1,10 @@
 from rest_framework import serializers
 from rest_framework_bulk import BulkListSerializer, BulkSerializerMixin
-from tag.models import Tag, TreeTag
 
 from account.models import School, Profile
+from account.utils import format_phonenumber
 from admin.account.api.v1.fields import TaggedItemRelatedField
+from tag.models import Tag, TreeTag
 
 
 class SchoolSerializer(BulkSerializerMixin, serializers.ModelSerializer):
@@ -26,6 +27,11 @@ class ProfileSerializer(BulkSerializerMixin, serializers.ModelSerializer):
     def create(self, validated_data):
         occupations = validated_data.pop('occupations', None)
         tags = validated_data.pop('tags', None)
+        
+        # doing this for the time being
+        phone_num = validated_data.pop('phone_num', None)
+        if phone_num:
+            validated_data['phone_num'] = format_phonenumber(phone_num)
         # only taking care of tags since other many2many relations will have extra through table to setup
         instance = super(ProfileSerializer, self).create(validated_data)
         if occupations:
@@ -41,6 +47,11 @@ class ProfileSerializer(BulkSerializerMixin, serializers.ModelSerializer):
     def update(self, instance, validated_data):
         occupations = validated_data.pop('occupations', None)
         tags = validated_data.pop('tags', None)
+        
+        # doing this for the time being
+        phone_num = validated_data.pop('phone_num', None)
+        if phone_num:
+            validated_data['phone_num'] = format_phonenumber(phone_num)
         # only taking care of tags since other many2many relations will have extra through table to setup
         instance = super(ProfileSerializer, self).update(instance, validated_data)
         if occupations != None:
