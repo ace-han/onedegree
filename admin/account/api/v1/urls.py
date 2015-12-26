@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from rest_framework_bulk.routes import BulkRouter
 
 from admin.account.api.v1 import views
@@ -8,6 +8,6 @@ router.register(r'schools', views.SchoolViewSet)
 router.register(r'profiles', views.ProfileViewSet)
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^', include(router.urls)),
-)
+]

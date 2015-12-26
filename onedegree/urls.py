@@ -15,30 +15,32 @@ Including another URLconf
 """
 
 from django.conf import settings
-from django.conf.urls import url, include, patterns
+from django.conf.urls import url, include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from onedegree.views import index, admin_index
 
+from django.views.i18n import javascript_catalog
+from django.contrib.sitemaps.views import sitemap
+from django.views.static import serve as static_serve
+
 
 # urlpatterns = i18n_patterns('', # will do i18n later in the future
-urlpatterns = patterns('',
+urlpatterns = [
     #url(r'^auth/', include('authx.urls', namespace='auth')),
     #url(r'^authx/', include('authx.urls', namespace='authx')),
     url(r'^api/', include('onedegree.api.urls', namespace='api')),
     url(r'^social/', include('social.apps.django_app.urls', namespace='social')),
-    url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',),
+    url(r'^sitemap\.xml$', sitemap),
     #url(r'^i18n/$', include('django.conf.urls.i18n')),
     url(r'^admin/$', admin_index, name='admin_index_page'),
     url(r'^$', index, name='index_page'),
-) + patterns('', url(r'^jsi18n/(?P<packages>\S+?)/$', 'django.views.i18n.javascript_catalog'),)
+    url(r'^jsi18n/(?P<packages>\S+?)/$', javascript_catalog),
+]
 
-# urlpatterns += patterns('',
-#     url(r'^api/', include('quanquan.urls.api', namespace='api')),
-# )
 
 if settings.DEBUG:
-    urlpatterns = patterns('',
-    url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
+    urlpatterns = [
+    url(r'^media/(?P<path>.*)$', static_serve,
         {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
-) + staticfiles_urlpatterns() + urlpatterns
+    ] + staticfiles_urlpatterns() + urlpatterns

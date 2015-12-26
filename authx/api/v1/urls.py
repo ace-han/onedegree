@@ -1,17 +1,17 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from rest_framework import routers
 
-from authx.api.v1.views import UserRetrieveUpdateViewSet
+from authx.api.v1 import views
 
 
 router = routers.DefaultRouter()
-router.register('users', UserRetrieveUpdateViewSet)
+router.register('users', views.UserRetrieveUpdateViewSet)
 
-urlpatterns = patterns('authx.api.v1.views',
+urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^token/$', 'obtain_jwt_token'),
-    url(r'^token/refresh/$', 'refresh_jwt_token'),
-    url(r'^token/verify/$', 'verify_jwt_token'),
-    url(r'^register/$', 'register'),
-    url(r'^login/$', 'login'),
-)
+    url(r'^token/$', views.obtain_jwt_token),
+    url(r'^token/refresh/$', views.refresh_jwt_token),
+    url(r'^token/verify/$', views.verify_jwt_token),
+    url(r'^register/$', views.register),
+    url(r'^login/$', views.login),
+]
