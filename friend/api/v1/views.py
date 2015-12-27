@@ -18,6 +18,7 @@ from account.models import Profile, SCHOOL_TYPES
 from account.utils import format_phonenumber
 from authx.permissions import IsAdminUser, SelfOnly
 from friend.api.v1.serializers import FriendProfileSerializer
+from friend.api.v1.social_routes import calculate_social_routes
 from friend.models import are_friends, PhoneContactRecord
 from tag.api.v1.serializers import TagSerializer
 from tag.models import TaggedItem, Tag
@@ -167,19 +168,47 @@ class SocialProfileListView(ReadOnlyModelViewSet):
     search_fields =  ('occupations__name', 'tags__name', 
                      'user__nickname', 'college__name', 'high_school__name', )
     
-    def _prepare_route_result(self, items):
-        profile_ids = ['%s'% item['id'] for item in items]
+    def _prepare_route_result(self, route, id_profile_dict):
+        '''
+            route must be a dict
+            return {
+                total_weight: n, 
+                weights: [n...],
+                items: [
+                    {id: n, display_name: xxx, is_from_mobile_contact: True/False,}, 
+                    {...},
+                    {...},
+                ], 
+                route_code: xxx,
+                
+            }
+        '''
+        profile_ids = []
+        items = []
+        for profile_id in route.pop('profile_ids', []):
+            profile_ids.append('%s' % profile_id)
+            profile = id_profile_dict[profile_id]
+            nickname = profile.pop('user__nickname')
+            username = profile.pop('user__username')
+            profile.update({
+                'display_name': nickname or username, 
+            })
+            # if display_name is '' then from user's own mobile
+            if profile['display_name']:
+                profile.pop('phone_num')
+            items.append(profile)
+            
         route_code = base64.urlsafe_b64encode( ','.join(profile_ids).encode('utf-8') )
         # We need string instead of bytes
         route_code = route_code.decode('utf-8')
-        items = map(lambda x: {'is_from_mobile_contact': False, 
-                               'display_name': x['user__nickname'] or x['user__username'],}, 
-                items)
-        result = {
+        
+        
+        route['route_code'] = route_code
+        route.update({
             'route_code': route_code,
             'items': items,
-        }
-        return result
+        })
+        return route
         
     def _extract_route_profile_ids(self, route_code):
         try:
@@ -202,16 +231,20 @@ class SocialProfileListView(ReadOnlyModelViewSet):
             ]
         '''
         target_user_id = request.query_params.get('target_user')
-        target_profile = get_object_or_404(Profile, user_id=4)
-        to_profile_ids = PhoneContactRecord.objects.filter(from_profile=target_profile).values_list('to_profile_id', flat=True)
-        p_qs = Profile.objects.filter(id__in=to_profile_ids).values('id', 'user__nickname', 'user__username')
         
-        p_qs = list(p_qs)
+        
+        dest_profile = get_object_or_404(Profile, user_id=target_user_id)
+        # src_profile = get_object_or_404(Profile, user=request.user)
+        src_profile = None
+        profile_id_set, routes = calculate_social_routes(src_profile, dest_profile)
+        
+        p_qs = Profile.objects.filter(id__in=profile_id_set).values('id', 
+                                        'user__nickname', 'user__username', 'phone_num')
+        id_profile_dict = dict((p['id'], p) for p in p_qs)
         result = []
-        result.append( self._prepare_route_result(p_qs[:2]) )
-        result.append( self._prepare_route_result(p_qs[2:5]) )
-        result.append( self._prepare_route_result(p_qs[5:9]) )
-        result.append( self._prepare_route_result(p_qs[9:15]) )
+        for route in routes:
+            result.append( self._prepare_route_result(route, id_profile_dict) )
+
         return Response(result)
     
     @list_route(['GET',],
