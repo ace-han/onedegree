@@ -18,7 +18,7 @@ from account.models import Profile, SCHOOL_TYPES
 from account.utils import format_phonenumber
 from authx.permissions import IsAdminUser, SelfOnly
 from friend.api.v1.serializers import FriendProfileSerializer
-from friend.api.v1.social_routes import calculate_social_routes
+from friend.api.v1.social_routes import calculate_topN_social_routes
 from friend.models import are_friends, PhoneContactRecord
 from tag.api.v1.serializers import TagSerializer
 from tag.models import TaggedItem, Tag
@@ -188,14 +188,6 @@ class SocialProfileListView(ReadOnlyModelViewSet):
         for profile_id in route.pop('profile_ids', []):
             profile_ids.append('%s' % profile_id)
             profile = id_profile_dict[profile_id]
-            nickname = profile.pop('user__nickname')
-            username = profile.pop('user__username')
-            profile.update({
-                'display_name': nickname or username, 
-            })
-            # if display_name is '' then from user's own mobile
-            if profile['display_name']:
-                profile.pop('phone_num')
             items.append(profile)
             
         route_code = base64.urlsafe_b64encode( ','.join(profile_ids).encode('utf-8') )
@@ -222,7 +214,7 @@ class SocialProfileListView(ReadOnlyModelViewSet):
         
     @list_route(['GET',],
                   url_path='social-routes'
-                  #, permission_classes=[IsAuthenticated,]
+                  , permission_classes=[IsAuthenticated,]
             )
     def social_routes(self, request, *args, **kwargs):
         '''
@@ -232,15 +224,27 @@ class SocialProfileListView(ReadOnlyModelViewSet):
         '''
         target_user_id = request.query_params.get('target_user')
         
-        
         dest_profile = get_object_or_404(Profile, user_id=target_user_id)
-        # src_profile = get_object_or_404(Profile, user=request.user)
-        src_profile = None
-        profile_id_set, routes = calculate_social_routes(src_profile, dest_profile)
-        
+        src_profile = get_object_or_404(Profile, user=request.user)
+        routes = calculate_topN_social_routes(src_profile, dest_profile, 10)
+        profile_id_set = set()
+    
+        for route in routes:
+            profile_id_set.update(route['profile_ids'])
+
         p_qs = Profile.objects.filter(id__in=profile_id_set).values('id', 
                                         'user__nickname', 'user__username', 'phone_num')
-        id_profile_dict = dict((p['id'], p) for p in p_qs)
+        id_profile_dict = {}
+        for p in p_qs:
+            nickname = p.pop('user__nickname')
+            username = p.pop('user__username')
+            p.update({
+                'display_name': nickname or username, 
+            })
+            # if display_name is '' then from user's own mobile
+            if p['display_name']:
+                p.pop('phone_num')
+            id_profile_dict[ p['id'] ] = p
         result = []
         for route in routes:
             result.append( self._prepare_route_result(route, id_profile_dict) )
