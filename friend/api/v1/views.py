@@ -206,10 +206,10 @@ class SocialProfileListView(ReadOnlyModelViewSet):
         try:
             profile_ids = base64.urlsafe_b64decode(route_code.encode('utf-8'))
             profile_ids = profile_ids.decode('utf-8')
+            profile_ids = [int(profile_id) for profile_id in profile_ids.split(',')]
         except Exception as e:
             raise ParseError('route_code is malformed')
         
-        profile_ids = profile_ids.split(',')
         return profile_ids
         
     @list_route(['GET',],
@@ -261,5 +261,14 @@ class SocialProfileListView(ReadOnlyModelViewSet):
         
         queryset = Profile.objects.filter(id__in=profile_ids)
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        
+        profile_id_idx_dict = {}
+        for idx, profile_id in enumerate(profile_ids):
+            profile_id_idx_dict[profile_id] = idx
+
+        result = [0]*len(profile_ids)
+        for profile in serializer.data:
+            idx = profile_id_idx_dict.get(profile['id'])
+            result[idx] = profile
+        return Response(result)
     
