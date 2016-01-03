@@ -10,6 +10,7 @@ from django.core.management.base import BaseCommand, CommandError
 from openpyxl import load_workbook
 
 from account.models import Profile
+from account.utils import format_phonenumber
 from friend.models import PhoneContactRecord
 
 
@@ -36,6 +37,10 @@ class Command(BaseCommand):
         for row in ws.iter_rows(row_offset=1):
             row_counter += 1
             from_phone_num = str(row[0].value or '')
+            try:
+                from_phone_num = format_phonenumber(from_phone_num)
+            except Exception as e:
+                raise CommandError('Line: %d encounter error: %s' % (row_counter, e, ) )
             from_profile = phone_num_profile_dict.get(from_phone_num)
             if not from_profile:
                 self.stderr.write('Line: %d, no profile for from_phone_num: %s' % (row_counter, from_phone_num,) )
@@ -46,7 +51,17 @@ class Command(BaseCommand):
             PhoneContactRecord.objects.filter(from_profile=from_profile).delete()
             
             to_phone_num_strs = re.split('[,锛� ]+', str(row[1].value or '') )
-            to_profiles = [ phone_num_profile_dict[to_phone_num] for to_phone_num in to_phone_num_strs if to_phone_num in phone_num_profile_dict ]
+            to_profiles = []
+            for to_phone_num in to_phone_num_strs:
+                if not to_phone_num:
+                    continue
+                try:
+                    to_phone_num = format_phonenumber(to_phone_num)
+                except Exception as e:
+                    raise CommandError('Line: %d encounter error to_phone_number: %s, %s' % (row_counter, to_phone_num, e, ) )
+                if to_phone_num in phone_num_profile_dict:
+                    to_profiles.append(phone_num_profile_dict[to_phone_num])
+
             for to_profile in to_profiles:
                 defaults = {
                     'to_phone_num': to_profile.phone_num
@@ -55,7 +70,7 @@ class Command(BaseCommand):
                     contact_record, newly_created = PhoneContactRecord.objects.get_or_create(from_profile=from_profile, 
                                                                                  to_profile=to_profile, defaults=defaults)
                 except Exception as e:
-                    raise CommandError('Line: %d encounter error: %s' % (row_counter, e, ) )
+                    raise CommandError('Line: %d encounter error to_profile: %s' % (row_counter, e, ) )
                 else:
                     if newly_created:
                         # actually in this style means always newly_created
