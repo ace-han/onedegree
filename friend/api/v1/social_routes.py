@@ -136,7 +136,7 @@ def prepare_friend_context(profile, contact_qs):
     college_profile_id_set = set()
     
     if profile.high_school_id:
-        high_school_alumni_qs = Profile.objects.filter(
+        high_school_alumni_qs = Profile.objects.exclude(id=profile.id).filter(
                                         high_school_id=profile.high_school_id).values('id', 
                                         'high_school_id', 'college_id')
     
@@ -144,7 +144,8 @@ def prepare_friend_context(profile, contact_qs):
             friend_id_profile_dict[ p['id'] ] = p
             high_school_profile_id_set.add( p['id'] )
     if profile.college_id:
-        college_alumni_qs = Profile.objects.filter(college_id=profile.college_id).values('id', 
+        college_alumni_qs = Profile.objects.exclude(id=profile.id).filter(
+                                        college_id=profile.college_id).values('id', 
                                         'high_school_id', 'college_id')
     
         for p in college_alumni_qs:
@@ -373,9 +374,10 @@ def resolve_4_node_routes(src, dest, src_friend_context, dest_friend_context):
         weight = resolve_src_relevant_weight(node2, src_friend_context)
         __add_route_node(route, node2, weight, closed=False)
         
-        relationship = relationship_array[row[0], row[1]]
-        weight = resolve_middle_relevant_weight(relationship)
-        __add_route_node(route, node3, weight, closed=False)
+        if node2 != node3:
+            relationship = relationship_array[row[0], row[1]]
+            weight = resolve_middle_relevant_weight(relationship)
+            __add_route_node(route, node3, weight, closed=False)
         
         weight = resolve_dest_relevant_weight(node3, dest_friend_context)
         __add_route_node(route, dest_id, weight, closed=True)
