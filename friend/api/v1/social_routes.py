@@ -222,6 +222,7 @@ def resolve_target_relevant_weight(node, friend_context, weight_config):
 def resolve_src_relevant_weight(node, src_friend_context):
     '''
         return None means no connection
+        node is actually profile_id
     '''
     return resolve_target_relevant_weight(node, src_friend_context, SRC_WEIGHT_CONFIG)
 
@@ -237,7 +238,7 @@ def resolve_2_node_routes(src, dest, src_friend_context, dest_friend_context):
         handle src->dest situation 
             weight is based on src not dest
     '''
-    weight = resolve_src_relevant_weight(dest, src_friend_context)
+    weight = resolve_src_relevant_weight(dest.id, src_friend_context)
     result = []
     if weight is None:
         return result
