@@ -33,6 +33,7 @@ TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = [
     '.madeinace.com',
+    '.eviltag.com',
 ]
 
 
@@ -377,6 +378,7 @@ CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_REGEX_WHITELIST = (
     '^(https?://)?[^/]+\.madeinace\.com(:[0-9]+)?$', 
+    '^(https?://)?[^/]+\.eviltag\.com(:[0-9]+)?$', 
 )
 CORS_URLS_REGEX = r'^/api/.*$'
 CORS_ALLOW_METHODS = (
